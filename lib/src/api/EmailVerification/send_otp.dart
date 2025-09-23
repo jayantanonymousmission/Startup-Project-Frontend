@@ -12,7 +12,7 @@ class SendOtp {
     try {
       final uri = kIsWeb
           ? Uri.parse("/auth/sendOtp") // relative → Netlify proxy se backend pe jayega
-          : Uri.parse("http://localhost:5000/auth/sendOtp"); // local dev
+          : Uri.parse("/auth/sendOtp"); // local dev
 
       //use http post for putting the data to backend
       final response = await http.post(
