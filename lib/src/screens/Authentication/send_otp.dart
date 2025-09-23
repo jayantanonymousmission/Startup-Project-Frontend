@@ -66,8 +66,11 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
     final response=await http.get(
         Uri.parse("https://startup-project-backend.onrender.com/auth/test"),
     );
-    print("Status Code: ${response.statusCode}");
-    print("Raw Response: ${response.body}");
+    Text(response.body);
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content:Text(response.body,style:TextStyle(color:Colors.white)),
+          backgroundColor:Colors.red,)
+    );
   }
   
   @override
