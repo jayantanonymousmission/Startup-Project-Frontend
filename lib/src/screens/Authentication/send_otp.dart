@@ -35,7 +35,7 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
             backgroundColor:Colors.blue,)
         );
       }
-      else{
+      else if(response?.status==false){
         setState(() {
           isLoading=false;
         });
