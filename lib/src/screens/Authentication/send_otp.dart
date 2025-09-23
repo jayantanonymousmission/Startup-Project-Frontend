@@ -1,5 +1,6 @@
 //import some libraries and files
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:startupproject/src/api/EmailVerification/send_otp.dart';
 
 //make stateful class for handling state
@@ -25,11 +26,7 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
         isLoading=true;
       });
       final email=emailController.text.trim();
-      print(email);
       final response=await SendOtp.sendOtpFunction(email);
-      print(response);
-      print(response?.status);
-      print(response?.message);
       if(response?.status==true){
         setState(() {
           isLoading=false;
@@ -64,6 +61,14 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
       print("Exception:$e");
     }
   }
+
+  Future<void> getrequest ()async{
+    final response=await http.get(
+        Uri.parse("http://localhost:5000/auth/test"),
+    );
+    print("Status Code: ${response.statusCode}");
+    print("Raw Response: ${response.body}");
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -81,7 +86,8 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
                 border:OutlineInputBorder(),
               ),
             ),
-            ElevatedButton(onPressed:sendOtpScreenFunction, child:Text("Send OTP"))
+            ElevatedButton(onPressed:sendOtpScreenFunction, child:Text("Send OTP")),
+            ElevatedButton(onPressed:getrequest, child:Text("get"))
           ],
         ),
       ),
