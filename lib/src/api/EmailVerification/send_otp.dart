@@ -11,7 +11,7 @@ class SendOtp {
     try {
       //use http post for putting the data to backend
       final response = await http.post(
-        Uri.parse(""),
+        Uri.parse("https://startup-project-backend.onrender.com/auth/sendOtp"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email}),
       );
