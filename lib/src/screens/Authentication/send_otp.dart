@@ -25,7 +25,11 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
         isLoading=true;
       });
       final email=emailController.text.trim();
+      print(email);
       final response=await SendOtp.sendOtpFunction(email);
+      print(response);
+      print(response?.status);
+      print(response?.message);
       if(response?.status==true){
         setState(() {
           isLoading=false;
@@ -37,12 +41,21 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
               backgroundColor:Colors.blue,)
         );
       }
-      else if(response?.status==false){
+      else if(response?.status==false && response?.message=='Email Already Exists'){
         setState(() {
           isLoading=false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content:Text("OTP Not Send",style:TextStyle(color:Colors.white)),
+            SnackBar(content:Text("Email Already Exists",style:TextStyle(color:Colors.white)),
+              backgroundColor:Colors.red,)
+        );
+      }
+      else{
+        setState(() {
+          isLoading=false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content:Text("Otp Not Send",style:TextStyle(color:Colors.white)),
               backgroundColor:Colors.red,)
         );
       }
