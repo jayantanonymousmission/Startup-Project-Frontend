@@ -10,27 +10,19 @@ class SendOtp {
   static Future<Email_Verification_Model?> sendOtpFunction(String email) async {
     //use exception handling for handling the data
     try {
-      final uri=
-      //? Uri.parse("http://localhost:5000/auth/sendOtp")
-      //? //Uri.parse("https://startup-project-backend.onrender.com/auth/sendOtp")
-      Uri.parse("http://localhost:5000/auth/sendOtp");
+      final uri = kIsWeb
+          ? Uri.parse("/auth/sendOtp") // relative → Netlify proxy se backend pe jayega
+          : Uri.parse("http://localhost:5000/auth/sendOtp"); // local dev
+
       //use http post for putting the data to backend
-      print(uri);
       final response = await http.post(
         uri,
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email}),
       );
       //use json decode for finding useful information from json
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        return Email_Verification_Model.fromJson(data);
-      } else {
-        return Email_Verification_Model(message: "Server error", status: false);
-      }
-
-      //final data = jsonDecode(response.body);
-      //return Email_Verification_Model.fromJson(data);
+      final data = jsonDecode(response.body);
+      return Email_Verification_Model.fromJson(data);
     }catch(e){
       return Email_Verification_Model(message:"Exception:\n $e",status:false);
     }
