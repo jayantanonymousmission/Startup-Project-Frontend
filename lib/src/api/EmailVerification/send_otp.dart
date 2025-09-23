@@ -16,6 +16,7 @@ class SendOtp {
         body: jsonEncode({"email": email}),
       );
       //use json decode for finding useful information from json
+      print(response.body);
       final data = jsonDecode(response.body);
       return Email_Verification_Model.fromJson(data);
     }catch(e){

@@ -13,7 +13,7 @@ class SendOtpScreen extends StatefulWidget {
 class _SendOtpScreenState extends State<SendOtpScreen> {
   //create some variables
   bool isLoading=false;
-  bool sendOtp=false;
+  bool otpSend=false;
   
   //create controllers
   TextEditingController emailController=TextEditingController();
@@ -29,10 +29,12 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
       if(response?.status==true){
         setState(() {
           isLoading=false;
+          otpSend=true;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content:(Text("OTP Send Successfully",style:TextStyle(color:Colors.white))),
-            backgroundColor:Colors.blue,)
+            SnackBar(
+              content:Text("OTP Send Successfully",style:TextStyle(color:Colors.white)),
+              backgroundColor:Colors.blue,)
         );
       }
       else if(response?.status==false){
@@ -40,7 +42,7 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
           isLoading=false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content:(Text("OTP Not Send",style:TextStyle(color:Colors.white))),
+            SnackBar(content:Text("OTP Not Send",style:TextStyle(color:Colors.white)),
               backgroundColor:Colors.red,)
         );
       }
