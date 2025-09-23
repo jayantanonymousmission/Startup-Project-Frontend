@@ -11,8 +11,8 @@ class SendOtp {
     //use exception handling for handling the data
     try {
       final uri = kIsWeb
-          ? Uri.parse("/auth/sendOtp") // relative → Netlify proxy se backend pe jayega
-          : Uri.parse("/auth/sendOtp"); // local dev
+          ? Uri.parse("https://startup-project-backend.onrender.com/auth/sendOtp") // relative → Netlify proxy se backend pe jayega
+          : Uri.parse("https://startup-project-backend.onrender.com/auth/sendOtp"); // local dev
 
       //use http post for putting the data to backend
       final response = await http.post(
