@@ -64,7 +64,7 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
 
   Future<void> getrequest ()async{
     final response=await http.get(
-        Uri.parse("http://localhost:5000/auth/test"),
+        Uri.parse("https://startup-project-backend.onrender.com/auth/test"),
     );
     print("Status Code: ${response.statusCode}");
     print("Raw Response: ${response.body}");
