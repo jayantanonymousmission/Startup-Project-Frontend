@@ -12,8 +12,8 @@ class SendOtpScreen extends StatefulWidget {
 
 class _SendOtpScreenState extends State<SendOtpScreen> {
   //create some variables
-  final bool isLoading=false;
-  final bool sendOtp=false;
+  bool isLoading=false;
+  bool sendOtp=false;
   
   //create controllers
   TextEditingController emailController=TextEditingController();
@@ -21,9 +21,29 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
   //create function for handling operations
   Future<void> sendOtpScreenFunction()async{
     try{
+      setState(() {
+        isLoading=true;
+      });
       final email=emailController.text.trim();
-      final response=SendOtp.sendOtpFunction(email);
-      print(response);
+      final response=await SendOtp.sendOtpFunction(email);
+      if(response?.status==true){
+        setState(() {
+          isLoading=false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content:(Text("OTP Send Successfully",style:TextStyle(color:Colors.white))),
+            backgroundColor:Colors.blue,)
+        );
+      }
+      else{
+        setState(() {
+          isLoading=false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content:(Text("OTP Not Send",style:TextStyle(color:Colors.white))),
+              backgroundColor:Colors.red,)
+        );
+      }
 
     }catch(e){
       print("Exception:$e");
