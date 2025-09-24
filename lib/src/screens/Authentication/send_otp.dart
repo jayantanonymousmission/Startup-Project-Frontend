@@ -64,13 +64,14 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
 
   Future<void> getrequest ()async{
     final response=await http.get(
-        Uri.parse("https://startup-project-backend.onrender.com/auth/test"),
+        Uri.parse("/auth/test"),
     );
     Text(response.body);
     ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content:Text(response.body,style:TextStyle(color:Colors.white)),
+        SnackBar(content:Text("Get Request Issue",style:TextStyle(color:Colors.white)),
           backgroundColor:Colors.red,)
     );
+
   }
   
   @override
@@ -89,7 +90,7 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
                 border:OutlineInputBorder(),
               ),
             ),
-            ElevatedButton(onPressed:sendOtpScreenFunction, child:Text("Send OTP")),
+            //ElevatedButton(onPressed:sendOtpScreenFunction, child:Text("Send OTP")),
             ElevatedButton(onPressed:getrequest, child:Text("get"))
           ],
         ),
