@@ -1,7 +1,9 @@
 //import some libraries and files
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:startupproject/src/api/EmailVerification/send_otp.dart';
+import 'package:startupproject/src/storage/validators/email_validation.dart';
+
+import '../../utility/controllerFunctions/sendOtp.dart';
 
 //make stateful class for handling state
 class SendOtpScreen extends StatefulWidget {
@@ -13,88 +15,141 @@ class SendOtpScreen extends StatefulWidget {
 
 class _SendOtpScreenState extends State<SendOtpScreen> {
   //create some variables
-  bool isLoading=false;
-  bool otpSend=false;
-  
+  bool isLoading = false;
+  bool otpSend = false;
+
   //create controllers
-  TextEditingController emailController=TextEditingController();
-  
+  TextEditingController emailController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+
   //create function for handling operations
-  Future<void> sendOtpScreenFunction()async{
-    try{
-      setState(() {
-        isLoading=true;
-      });
-      final email=emailController.text.trim();
-      final response=await SendOtp.sendOtpFunction(email);
-      if(response?.status==true){
+  void handleSendOTP() {
+    sendOtpScreenFunction(
+      context: context,
+      emailController: emailController,
+      updateState: (loading, sent) {
         setState(() {
-          isLoading=false;
-          otpSend=true;
+          isLoading = loading;
+          otpSend = sent;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content:Text("OTP Send Successfully",style:TextStyle(color:Colors.white)),
-              backgroundColor:Colors.blue,)
-        );
-      }
-      else if(response?.status==false && response?.message=='Email Already Exists'){
-        setState(() {
-          isLoading=false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content:Text("Email Already Exists",style:TextStyle(color:Colors.white)),
-              backgroundColor:Colors.red,)
-        );
-      }
-      else{
-        setState(() {
-          isLoading=false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content:Text("Otp Not Send",style:TextStyle(color:Colors.white)),
-              backgroundColor:Colors.red,)
-        );
-      }
-
-    }catch(e){
-      print("Exception:$e");
-    }
+      },
+      formKey:_formKey,
+    );
   }
 
-  Future<void> getrequest ()async{
-    final response=await http.get(
-        Uri.parse("/auth/test"),
-    );
-    Text(response.body);
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content:Text("Get Request Issue",style:TextStyle(color:Colors.white)),
-          backgroundColor:Colors.red,)
-    );
+  Widget textFields(){
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Center(child:Column(children: [
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: CircleAvatar(
+              backgroundColor:Colors.blueAccent,
+              minRadius:30,
+              child:Icon(Icons.mail,color:Colors.white,size:38),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Text("Please Verify your Email",style:TextStyle(fontSize:20,fontWeight:FontWeight.bold)),
+          ),
 
-  }
-  
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar:AppBar(
-
-      ),
-      body:SingleChildScrollView(
-        child:Column(
-          children: [
-            TextField(
-              controller:emailController,
-              decoration:InputDecoration(
-                labelText:"Enter Email",
-                border:OutlineInputBorder(),
+          Padding(
+            padding:EdgeInsets.all(20),
+            child: Form(
+              key:_formKey,
+              child: TextFormField(
+                controller: emailController,
+                validator:validateEmail,
+                decoration: InputDecoration(
+                  labelText: "Enter Email",
+                   labelStyle:TextStyle(color:Colors.blue),
+                   enabledBorder:OutlineInputBorder(
+                       borderSide:BorderSide(
+                         color:Colors.blue,
+                         width:2,
+                         style: BorderStyle.solid,
+                       )
+                   ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.blue,
+                        width: 2,
+                        style: BorderStyle.solid,
+                      ),
+                    )
+                ),
               ),
             ),
-            //ElevatedButton(onPressed:sendOtpScreenFunction, child:Text("Send OTP")),
-            ElevatedButton(onPressed:getrequest, child:Text("get"))
-          ],
-        ),
-      ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Container(
+              width:double.infinity,
+              height: 50,
+              child: TextButton(
+                  onPressed: handleSendOTP,
+                  style:TextButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor:Colors.white,
+                    shape:RoundedRectangleBorder(
+                      borderRadius:BorderRadius.circular(10)
+                    ),
+                  ),
+
+                  child: Text("Send OTP",style:TextStyle(fontSize:20))
+              ),
+            ),
+          ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                mainAxisAlignment:MainAxisAlignment.center,
+                children: [
+                Text("If you are already signup?",style:TextStyle(fontSize:20)),
+                TextButton(
+                  onPressed: () {  },
+                  child:Text("SignIn",style:TextStyle(fontSize:20,color:Colors.purple,decoration:TextDecoration.underline),))
+              ],),
+            )
+          ]))
+        ],
+      )
     );
   }
-}
+
+
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+          appBar: AppBar(),
+
+          body:kIsWeb?
+              textFields()
+              :
+              textFields()
+
+
+      // SingleChildScrollView(
+      //   child: Column(
+      //     children: [
+      //       Form(
+      //         key:_formKey,
+      //         child: TextFormField(
+      //           controller: emailController,
+      //            validator:validateEmail,
+      //           decoration: InputDecoration(
+      //             labelText: "Enter Email",
+      //             border: OutlineInputBorder(),
+      //           ),
+      //         ),
+      //       ),
+      //       ElevatedButton(onPressed: handleSendOTP, child: Text("Send OTP")),
+      //     ],
+      //   ),
+      // ),
+      );
+    }
+  }

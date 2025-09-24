@@ -11,8 +11,8 @@ class SendOtp {
     //use exception handling for handling the data
     try {
       final uri = kIsWeb
-          ? Uri.parse("/auth/sendOtp") // relative → Netlify proxy se backend pe jayega
-          : Uri.parse("/auth/sendOtp"); // local dev
+          ? Uri.parse("/auth/sendOtp")
+          : Uri.parse("https://startup-project-backend.onrender.com/auth/sendOtp");
 
       //use http post for putting the data to backend
       final response = await http.post(
@@ -20,9 +20,11 @@ class SendOtp {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({"email": email}),
       );
+
       //use json decode for finding useful information from json
       final data = jsonDecode(response.body);
       return Email_Verification_Model.fromJson(data);
+
     }catch(e){
       return Email_Verification_Model(message:"Exception:\n $e",status:false);
     }
