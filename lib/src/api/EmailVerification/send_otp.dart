@@ -13,6 +13,7 @@ class SendOtp {
       final uri = kIsWeb
           ? Uri.parse("/auth/sendOtp")
           : Uri.parse("https://startup-project-backend.onrender.com/auth/sendOtp");
+          //:Uri.parse("http://localhost:5000/auth/sendOtp");
 
       //use http post for putting the data to backend
       final response = await http.post(
