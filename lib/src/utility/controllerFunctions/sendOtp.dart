@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../storage/constant/constants.dart';
 import '../../api/EmailVerification/send_otp.dart';
 import '../snackbar.dart';
+import "../../storage/custom_widgets/text_field.dart";
 
 //create class controller for send otp function
 Future<void> sendOtpScreenFunction({
@@ -14,7 +15,7 @@ Future<void> sendOtpScreenFunction({
   if (formKey.currentState!.validate()) {
     // Proceed with OTP logic
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Sending OTP Wait...')),
+      SnackBar(content:LabelText(text:'Sending OTP Wait...',color:AppColor.white,fontSize:15,)),
     );
   }
   try {
