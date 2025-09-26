@@ -1,8 +1,8 @@
 //import some libraries and files
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:startupproject/src/storage/common_widget/send_otp.dart';
-import '../../utility/controllerFunctions/sendOtp.dart';
+import 'package:startupproject/src/storage/common_widget/authentication/email_verification.dart';
+import '../../utility/controllerFunctions/authentication/send_otp.dart';
 
 //make stateful class for handling state
 class SendOtpScreen extends StatefulWidget {
@@ -42,10 +42,10 @@ class _SendOtpScreenState extends State<SendOtpScreen> {
       return Scaffold(
           appBar: AppBar(),
 
-          body:kIsWeb?
-              SendOTP(function:handleSendOTP, controller:emailController, formKey:_formKey,)
-              :
-              SendOTP(function:handleSendOTP, controller:emailController, formKey:_formKey,)
+          //body:kIsWeb?
+              //SendOTP(function:handleSendOTP, controller:emailController, formKey:_formKey,)
+              //:
+              //SendOTP(function:handleSendOTP, controller:emailController, formKey:_formKey,)
       );
     }
   }

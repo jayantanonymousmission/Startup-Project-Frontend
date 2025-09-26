@@ -24,4 +24,5 @@ class AppColor{
   static const Color deepPurpleAccent=Colors.deepPurpleAccent;
   static const Color pink=Colors.pink;
   static const Color pinkAccent=Colors.pinkAccent;
+  static const Color transparent=Colors.transparent;
 }

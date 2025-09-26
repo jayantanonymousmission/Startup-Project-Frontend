@@ -5,12 +5,12 @@ import 'package:http/http.dart' as http;
 import '../../models/EmailVerification/email_verification_model.dart';
 
 //create class
-class SendOtp {
+class ResendOtp {
   //create email verification api function for handling http requests
-  static Future<Email_Verification_Model?> sendOtpFunction(String email) async {
+  static Future<Email_Verification_Model?> resendOtpFunction(String email) async {
     //use exception handling for handling the data
     try {
-      final uri = Uri.parse("http://localhost:5000/auth/sendOtp");
+      final uri = Uri.parse("http://localhost:5000/auth/resendOtp");
 
       //use http post for putting the data to backend
       final response = await http.post(
