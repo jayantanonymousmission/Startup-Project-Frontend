@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:startupproject/src/screens/Authentication/send_otp.dart';
+import 'package:startupproject/src/screens/Authentication/email_verification.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner:false,
-      home:SendOtpScreen(),
+      home:EmailVerificationScreen(),
     );
   }
 }

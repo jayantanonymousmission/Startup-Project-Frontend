@@ -1,19 +1,17 @@
 //import some libraries and files
 import 'package:flutter/material.dart';
 import 'package:pin_code_text_field/pin_code_text_field.dart';
-import 'package:startupproject/src/api/EmailVerification/verify_otp.dart';
+import 'package:startupproject/src/screens/Authentication/registration_screen.dart';
+import 'package:startupproject/src/screens/Authentication/login_screen.dart';
 import 'package:startupproject/src/storage/custom_widgets/text_field.dart';
-import 'package:startupproject/src/storage/custom_widgets/text_form_field.dart';
 import 'package:startupproject/src/storage/constant/constants.dart';
 import 'package:startupproject/src/utility/controllerFunctions/authentication/resend_otp.dart';
 import 'package:startupproject/src/utility/controllerFunctions/authentication/send_otp.dart';
 import '../../../utility/controllerFunctions/authentication/verify_otp.dart';
-import '../../validators/email_validation.dart';
 
 //for app or web
-class EmailVerification extends StatelessWidget {
-  EmailVerification({super.key,
-    required this.function,
+class CommonEmailVerification extends StatelessWidget {
+  CommonEmailVerification({super.key,
     required this.formKey,
     required this.isLoading,
     required this.otpSend,
@@ -33,7 +31,6 @@ class EmailVerification extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController otpController;
   final GlobalKey<FormState> formKey;
-  final VoidCallback function;
   Function(bool isLoading, bool otpSend) sendUpdateState;
   Function(bool isLoading,bool otpVerify) verifyUpdateState;
   Function(bool isLoading) resendUpdateState;
@@ -44,11 +41,14 @@ class EmailVerification extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             //Circle Avatar for circular image
-            Center(
-              child: CircleAvatar(
-                backgroundColor: Colors.blue,
-                radius: 30,
-                child: Icon(Icons.email, color: Colors.white, size: 35),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0, 70, 0, 0),
+              child: Center(
+                child: CircleAvatar(
+                  backgroundColor: Colors.blue,
+                  radius: 30,
+                  child: Icon(Icons.email, color: Colors.white, size: 35),
+                ),
               ),
             ),
             Padding(
@@ -171,6 +171,9 @@ class EmailVerification extends StatelessWidget {
                           backgroundColor: (otpSend)
                               ? Colors.grey
                               : Colors.blue,
+                            shape:RoundedRectangleBorder(
+                                borderRadius:BorderRadius.circular(5)
+                            )
                         ),
                         child:LabelText(text:"Send OTP",color:AppColor.white,fontSize:17)
                       ),
@@ -191,6 +194,9 @@ class EmailVerification extends StatelessWidget {
                           backgroundColor: (otpSend)
                               ? Colors.blue
                               : Colors.grey,
+                          shape:RoundedRectangleBorder(
+                            borderRadius:BorderRadius.circular(5)
+                          )
                         ),
                         child:LabelText(text:"OTP Verify",fontSize:17,color:AppColor.white)
                       ),
@@ -199,20 +205,41 @@ class EmailVerification extends StatelessWidget {
                 ),
               ],
             ),
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    LabelText(text:"If Email Already Verified?",color:AppColor.blue,fontSize:15,fontWeight:FontWeight.bold),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>RegistrationScreen(),
+                          ),
+                        );
+                      },
+                      child:LabelText(text:"Register",color:AppColor.purple,fontSize:18,textDecoration:TextDecoration.underline)
+                    ),
+                  ],
+                ),
+              ),
+            //),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                LabelText(text:"If Email Already Verified?",color:AppColor.blue,fontWeight:FontWeight.bold),
+                LabelText(text:"If your are already Registered?",color:AppColor.blue,fontSize:15,fontWeight:FontWeight.bold),
                 TextButton(
-                  onPressed: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => RegistrationScreen(),
-                    //   ),
-                    // );
-                  },
-                  child:LabelText(text:"Registration",color:AppColor.blue,textDecoration:TextDecoration.underline)
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>LoginScreen(),
+                        ),
+                      );
+                    },
+                    child:LabelText(text:"Login",color:AppColor.purple,fontSize:18,textDecoration:TextDecoration.underline)
                 ),
               ],
             ),

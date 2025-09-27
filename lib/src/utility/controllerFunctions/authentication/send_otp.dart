@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../../storage/constant/constants.dart';
 import '../../../api/EmailVerification/send_otp.dart';
 import '../../snackbar.dart';
-import "../../../storage/custom_widgets/text_field.dart";
 
 //create class controller for send otp function
 Future<void> sendOtpScreenFunction({
@@ -12,25 +11,27 @@ Future<void> sendOtpScreenFunction({
   required Function(bool isLoading, bool otpSend) updateState,
   required GlobalKey<FormState> formKey,
 }) async {
-  if (formKey.currentState!.validate()) {
+  if (formKey.currentState != null && formKey.currentState!.validate()) {
     // Proceed with OTP logic
     SnackBarClass.snackBarFunction(context,"Sending OTP Wait",AppColor.white);
   }
-  try {
     updateState(true, false);
     final email = emailController.text.trim();
     final response = await SendOtp.sendOtpFunction(email);
+
+  try {
     if (response?.status == true) {
       updateState(false, true);
       SnackBarClass.snackBarFunction(context,"OTP Send Successfully",AppColor.blue);
     }
-    else if (response?.status == false && response?.message == 'Email Already Exists') {
+
+    else if (response?.status == false && response?.message == 'Email Already Exist') {
       updateState(false, false);
-      SnackBarClass.snackBarFunction(context,"Email Already Exists",AppColor.red);
+      SnackBarClass.snackBarFunction(context,"Email Already Exist",AppColor.red);
     }
     else {
       updateState(false, false);
-      SnackBarClass.snackBarFunction(context, "OTP Not Send", AppColor.red);
+      SnackBarClass.snackBarFunction(context, "OTP Not Send!Please Check Email", AppColor.red);
     }
   } catch (e) {
     print("Exception:$e");

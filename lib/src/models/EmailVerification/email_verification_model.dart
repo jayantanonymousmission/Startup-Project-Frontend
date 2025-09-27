@@ -16,8 +16,8 @@ class Email_Verification_Model{
     return Email_Verification_Model(
       email:json['email'].toString(),
       otp:json['otp'] != null ? int.tryParse(json['otp'].toString()) : null,
-      message:json['message'].toString(),
       status:json['status'] is bool ? json['status']:(json['status']?.toString().toLowerCase()=="true"),
+      message:json['message'].toString(),
     );
   }
 }
