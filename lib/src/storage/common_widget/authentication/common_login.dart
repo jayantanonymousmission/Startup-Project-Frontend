@@ -27,16 +27,16 @@ class CommonLogin extends StatelessWidget {
     return SingleChildScrollView(
       //column is used for align widget in vertically
       child: Column(
-        crossAxisAlignment:CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         //use children for taking multiple widgets
         children: [
           Padding(
-              padding:EdgeInsets.fromLTRB(0, 70, 0, 0),
-              child:Center(child: Icon(Icons.account_box_outlined,size: 45,)),
+            padding: EdgeInsets.fromLTRB(0, 70, 0, 0),
+            child: Center(child: Icon(Icons.account_box_outlined, size: 45)),
           ),
           Padding(
-            padding:EdgeInsets.all(20),
-            child:Center(child: LabelText(text:"Login"))
+            padding: EdgeInsets.all(20),
+            child: Center(child: LabelText(text: "Login")),
           ),
           //padding is used for give space to widget
           Padding(
@@ -75,12 +75,22 @@ class CommonLogin extends StatelessWidget {
                       ),
                     ),
 
-                    Align(alignment:Alignment.centerRight,child: TextButton(onPressed:(){}, child:LabelText(text:"Forgot Password",color:AppColor.purple,fontSize:15,))),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {},
+                      child: LabelText(
+                        text: "Forgot Password",
+                        color: AppColor.purple,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(10),
-                    child:SizedBox(
+                    child: SizedBox(
                       width: double.infinity,
-                      height:50,
+                      height: 50,
                       child: TextButton(
                         onPressed: () => loginScreen(
                           emailController: emailController,
@@ -88,37 +98,48 @@ class CommonLogin extends StatelessWidget {
                           updateState: updateState,
                           context: context,
                         ),
-                        style:TextButton.styleFrom(
+                        style: TextButton.styleFrom(
                           backgroundColor: Colors.blue,
-                          shape:RoundedRectangleBorder(
-                              borderRadius:BorderRadius.circular(5)
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
                           ),
                         ),
                         child: Text(
                           "Login",
-                          style: TextStyle(color: Colors.white,fontSize:20),
+                          style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
                       ),
                     ),
                   ),
                   SingleChildScrollView(
-                    scrollDirection:Axis.horizontal,
+                    scrollDirection: Axis.horizontal,
                     child: Padding(
                       padding: const EdgeInsets.all(15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          LabelText(text:"If Email is Not Verified?",color:AppColor.blue,fontSize:15,fontWeight:FontWeight.bold),
+                          LabelText(
+                            text: "If Email is Not Verified?",
+                            color: AppColor.blue,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                           TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>EmailVerificationScreen(),
-                                  ),
-                                );
-                              },
-                              child:LabelText(text:"Email Verification",color:AppColor.purple,fontSize:18,textDecoration:TextDecoration.underline)
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      EmailVerificationScreen(),
+                                ),
+                              );
+                            },
+                            child: LabelText(
+                              text: "Email Verification",
+                              color: AppColor.purple,
+                              fontSize: 18,
+                              textDecoration: TextDecoration.underline,
+                            ),
                           ),
                         ],
                       ),

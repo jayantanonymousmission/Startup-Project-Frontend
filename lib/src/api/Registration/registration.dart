@@ -9,10 +9,12 @@ class Registration{
   static Future<RegistrationModel?> registrationFunction(String name,String password,String gender,String address,String role,String code)async{
     //use try catch for handling errors
     try {
+      //create variables
+      final uri=Uri.parse("http://localhost:5000/auth/register");
       // for hitting post request so use http.post
       final response = await http.post(
         //pass api url to uri.parse
-          Uri.parse("http://localhost:5000/auth/register"),
+          uri,
           headers: {"Content-Type": "application/json"},
           //jsonEncode is used for abstracting data from api
           body: jsonEncode({
@@ -24,7 +26,7 @@ class Registration{
             "code": code
           })
       );
-      //json decode means to decode the data
+      //json decode means converting json data to flutter data
       final data=jsonDecode(response.body);
       return RegistrationModel.fromJson(data);
     }catch(e){

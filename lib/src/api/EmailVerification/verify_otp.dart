@@ -1,22 +1,29 @@
 //import some libraries and files
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
 import '../../models/EmailVerification/email_verification_model.dart';
 
+//create class
 class VerifyOtp{
-  static Future<Email_Verification_Model?> verifyOtpFunction(String email,int otp)async{
+
+  static Future<EmailVerificationModel?> verifyOtpFunction(String email,int otp)async{
+    //use exception handling for handling the errors
     try {
+      //create variables
+      final uri=Uri.parse("http://localhost:5000/auth/verifyOtp");
+
+      //use http post for putting the data to backend
       final response = await http.post(
-          Uri.parse("http://localhost:5000/auth/verifyOtp"),
+          uri,
           headers: {"Content-Type": "application/json"},
           body: jsonEncode({"email": email, "otp": otp})
       );
+
+      //json decode is used for converting json data to flutter data
       final data = jsonDecode(response.body);
-      return Email_Verification_Model.fromJson(data);
+      return EmailVerificationModel.fromJson(data);
     }catch(e){
-      return Email_Verification_Model(message:"Exception:$e",status:false);
-      return null;
+      return EmailVerificationModel(message:"Exception:$e",status:false);
     }
   }
 }
