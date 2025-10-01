@@ -1,5 +1,6 @@
 //import some libraries and files
 import "package:flutter/material.dart";
+import "package:startupproject/src/screens/Authentication/login_screen.dart";
 
 import "../../../api/Registration/registration.dart";
 
@@ -35,10 +36,10 @@ Future<void> registrationScreen({
   if (response?.status == true) {
     updateState(false);
     if (response?.role == "customer") {
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => LoginScreen()),
-      // );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) =>LoginScreen()),
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -51,10 +52,10 @@ Future<void> registrationScreen({
     }
     if (response?.role == 'admin' && response?.code == "@admin_open_12380091_Code") {
       updateState(false);
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => LoginScreen()),
-      // );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -67,10 +68,10 @@ Future<void> registrationScreen({
     }
     else if (response?.role == 'superAdmin' && response?.code == "@@abcSuper_admin_1200874213_Code") {
       updateState(false);
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => LoginScreen()),
-      // );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -83,10 +84,10 @@ Future<void> registrationScreen({
     }
     else if (response?.role == 'employee' && response?.code == "@employees_ka_gate_394893_kholo_yaar") {
       updateState(false);
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => LoginScreen()),
-      // );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -99,10 +100,10 @@ Future<void> registrationScreen({
     }
     else if (response?.role == 'worker' && response?.code == "@worker_code_@321") {
       updateState(false);
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => LoginScreen()),
-      // );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(

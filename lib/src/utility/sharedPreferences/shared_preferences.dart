@@ -34,3 +34,12 @@ Future<Widget> getSharedPreferences()async{
   }
  return EmailVerificationScreen();
 }
+
+
+//free from sharedPreference
+Future<void> freeSharedPreferences(BuildContext context)async{
+  var response=await SharedPreferences.getInstance();
+  await response.remove("token");
+  await response.remove("role");
+  Navigator.pushReplacement(context,MaterialPageRoute(builder:(context)=>LoginScreen()));
+}

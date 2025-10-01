@@ -10,7 +10,7 @@ class Registration{
     //use try catch for handling errors
     try {
       //create variables
-      final uri=Uri.parse("http://localhost:5000/auth/register");
+      final uri=Uri.parse("http://192.168.31.246:5000/auth/register");
       // for hitting post request so use http.post
       final response = await http.post(
         //pass api url to uri.parse

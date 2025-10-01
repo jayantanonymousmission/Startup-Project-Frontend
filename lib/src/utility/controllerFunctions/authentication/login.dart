@@ -16,15 +16,19 @@ Future<void> loginScreen({
   required Function(bool isLoading) updateState,
   required BuildContext context,
 })async{
+  //initialize the controller
   final email = emailController.text.trim();
   final password = passwordController.text.trim();
+  //update the state
   updateState(true);
+  //call login model function
   final response=await LoginModel.loginFunction(email,password);
+  //initialize the token and role
   final token=response?.token;
   final role=response?.role;
+  //set shared preference for storing value
   final data=await SharedPreferences.getInstance();
-  print(token);
-  print(role);
+
   //checking conditions
   if(role!=null && token != null && response?.status==true){
     updateState(false);
@@ -53,12 +57,10 @@ Future<void> loginScreen({
   }
   else if(response?.status==false && response?.message=="User Not Found"){
     updateState(false);
-    //Navigator.pushReplacement(context,MaterialPageRoute(builder:(context)=>response.role));
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text("User Not Found",style:TextStyle(color:Colors.white)),backgroundColor:Colors.red));
   }
   else if(response?.status==false && response?.message=="Invalid Credentials"){
     updateState(false);
-    //Navigator.pushReplacement(context,MaterialPageRoute(builder:(context)=>response.role));
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:Text("Invalid Credentials",style:TextStyle(color:Colors.white)),backgroundColor:Colors.red));
   }
   else{
