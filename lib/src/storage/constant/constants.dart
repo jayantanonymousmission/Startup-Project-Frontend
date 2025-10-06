@@ -9,6 +9,7 @@ class AppColor{
   static const Color redAccent=Colors.redAccent;
   static const Color blue=Colors.blue;
   static const Color blueAccent=Colors.blueAccent;
+  static const Color lightBlueAccent=Colors.lightBlueAccent;
   static const Color green=Colors.green;
   static const Color greenAccent=Colors.greenAccent;
   static const Color grey=Colors.grey;
@@ -25,4 +26,7 @@ class AppColor{
   static const Color pink=Colors.pink;
   static const Color pinkAccent=Colors.pinkAccent;
   static const Color transparent=Colors.transparent;
+  static const Color indigo=Colors.indigo;
+  static const Color indigoAccent=Colors.indigoAccent;
+  static const Color blueGrey= Color(0xFF3F51B5);
 }
