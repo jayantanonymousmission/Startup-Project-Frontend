@@ -12,6 +12,7 @@ class CustomTextButton extends StatelessWidget {
   required this.textDecoration,
   required this.backgroundColor,
   required this.borderRadius,
+    this.fontWeight=FontWeight.normal
   });
   //create some variables
   final VoidCallback callback;
@@ -21,6 +22,7 @@ class CustomTextButton extends StatelessWidget {
   final TextDecoration textDecoration;
   final Color ? backgroundColor;
   final BorderRadius ? borderRadius;
+  final FontWeight ? fontWeight;
   @override
   Widget build(BuildContext context) {
     return TextButton(
@@ -31,7 +33,10 @@ class CustomTextButton extends StatelessWidget {
             borderRadius:borderRadius ?? BorderRadius.circular(20),
           )
         ),
-        child:LabelText(text:text,color:color,fontSize:size,textDecoration:textDecoration)
+        child:Padding(
+          padding: const EdgeInsets.all(10),
+          child: LabelText(text:text,color:color,fontSize:size,textDecoration:textDecoration,fontWeight:fontWeight,),
+        )
     );
   }
 }

@@ -1,7 +1,10 @@
 //import some libraries and files
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:startupproject/src/screens/super_admin/admin.dart';
+import 'package:startupproject/src/screens/super_admin/customer.dart';
+import 'package:startupproject/src/screens/super_admin/employee.dart';
 import 'package:startupproject/src/screens/super_admin/report_analysis.dart';
+import 'package:startupproject/src/screens/super_admin/worker.dart';
 import 'package:startupproject/src/storage/constant/constants.dart';
 import 'package:startupproject/src/storage/custom_widgets/custom_card.dart';
 import 'package:startupproject/src/storage/custom_widgets/drawer.dart';
@@ -9,6 +12,7 @@ import 'package:startupproject/src/storage/custom_widgets/drawer_header.dart';
 import 'package:startupproject/src/storage/custom_widgets/icon.dart';
 import 'package:startupproject/src/storage/custom_widgets/list_tile.dart';
 import 'package:startupproject/src/storage/custom_widgets/text_field.dart';
+import 'package:startupproject/src/utility/sharedPreferences/shared_preferences.dart';
 
 class SuperAdminScreen extends StatefulWidget {
   const SuperAdminScreen({super.key});
@@ -28,42 +32,28 @@ class _SuperAdminScreenState extends State<SuperAdminScreen> {
           Divider(),
           ListTiles(text: "Report Analysis", icon: Icons.analytics,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>ReportAnalysisOfSuperAdmin()));}),
           Divider(),
-          ListTiles(text: "Admin", icon: Icons.face),
+          ListTiles(text: "Admin", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>AdminInSuperAdmin()));},),
           Divider(),
-          ListTiles(text: "Employees", icon: Icons.face),
+          ListTiles(text: "Employees", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>EmployeeInSuperAdmin()));}),
           Divider(),
-          ListTiles(text: "Workers", icon: Icons.face),
+          ListTiles(text: "Workers", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>WorkerInSuperAdmin()));}),
           Divider(),
-          ListTiles(text: "Customers", icon: Icons.face),
+          ListTiles(text: "Customers", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>CustomerInSuperAdmin()));}),
           Divider(),
-          ListTiles(text: "Settings", icon: Icons.settings),
+          ListTiles(text: "Logout", icon: Icons.logout,callback:(){freeSharedPreferences(context);},),
           Divider(),
-          ListTiles(text: "Logout", icon: Icons.logout),
-          Divider(),
-          ListTiles(text: "Back", icon: Icons.arrow_back_ios),
+          ListTiles(text: "Back", icon: Icons.arrow_forward_ios),
           Divider(),
         ],
       ),
       //for web
-      body: kIsWeb
-          ? SingleChildScrollView(
-              child: Column(
-                children: [
-                  Text("Super Admin Web"),
-                  //Card
-                  Card(color: Colors.red, child:LabelText(text:"Card")),
-                ],
-              ),
-            )
-          :
-            //for app or desktop
-            SingleChildScrollView(
+      body:SingleChildScrollView(
               child: Column(
                 crossAxisAlignment:CrossAxisAlignment.start,
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
-                    child: LabelText(text: "Welcome to Super Admin DashBoard"),
+                    child: LabelText(text: "Welcome to SuperAdmin DashBoard"),
                   ),
                   Wrap(
                     children: [
@@ -74,7 +64,7 @@ class _SuperAdminScreenState extends State<SuperAdminScreen> {
                         children: [
                           Center(
                               child:Padding(padding:EdgeInsets.all(10),child:
-                      CustomIcon(icon:Icons.account_box_outlined,size:30,color:AppColor.white))
+                              CustomIcon(icon:Icons.account_box_outlined,size:30,color:AppColor.white))
                           ),
                           Padding(
                             padding: const EdgeInsets.all(10),

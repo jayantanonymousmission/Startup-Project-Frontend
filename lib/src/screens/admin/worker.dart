@@ -1,7 +1,10 @@
 //import some libraries and files
-import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:startupproject/src/screens/Authorization/super_admin.dart';
+import 'package:startupproject/src/screens/Authorization/admin.dart';
+import 'package:startupproject/src/screens/admin/customer.dart';
+import 'package:startupproject/src/screens/admin/employee.dart';
+import 'package:startupproject/src/screens/admin/report_analysis.dart';
 import 'package:startupproject/src/storage/constant/constants.dart';
 import 'package:startupproject/src/storage/custom_widgets/custom_card.dart';
 import 'package:startupproject/src/storage/custom_widgets/drawer.dart';
@@ -12,13 +15,13 @@ import 'package:startupproject/src/storage/custom_widgets/text_button.dart';
 import 'package:startupproject/src/storage/custom_widgets/text_field.dart';
 import 'package:startupproject/src/utility/sharedPreferences/shared_preferences.dart';
 
-class CustomerScreen extends StatefulWidget {
-  const CustomerScreen({super.key});
+class WorkerInAdmin extends StatefulWidget {
+  const WorkerInAdmin({super.key});
   @override
-  State<CustomerScreen> createState() => _CustomerScreenState();
+  State<WorkerInAdmin> createState() => _WorkerInAdminState();
 }
 
-class _CustomerScreenState extends State<CustomerScreen> {
+class _WorkerInAdminState extends State<WorkerInAdmin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,30 +29,49 @@ class _CustomerScreenState extends State<CustomerScreen> {
       drawer: Drawers(
         children: [
           CustomDrawerHeader(name: "Jayant", email: "jayant62644@gmail.com"),
-          ListTiles(text: "DashBoard", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>SuperAdminScreen()));},),
+          ListTiles(text: "DashBoard", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>AdminScreen()));},),
+          Divider(),
+          ListTiles(text: "Report Analysis", icon: Icons.analytics,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>ReportAnalysisOfAdmin()));}),
+          Divider(),
+          ListTiles(text: "Employees", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>EmployeeInAdmin()));}),
+          Divider(),
+          ListTiles(text: "Workers", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>WorkerInAdmin()));}),
+          Divider(),
+          ListTiles(text: "Customers", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>CustomerInAdmin()));}),
           Divider(),
           ListTiles(text: "Logout", icon: Icons.logout,callback:(){freeSharedPreferences(context);},),
           Divider(),
-          ListTiles(text: "Back", icon: Icons.arrow_forward_ios),
+          ListTiles(text: "Back", icon: Icons.arrow_forward_ios,callback:(){Navigator.pop(context);},),
           Divider(),
         ],
       ),
       //for web
-      body:SingleChildScrollView(
+      body: kIsWeb
+          ? SingleChildScrollView(
+        child: Column(
+          children: [
+            Text("Admin Web"),
+            //Card
+            Card(color: Colors.red, child:LabelText(text:"Card")),
+          ],
+        ),
+      )
+          :
+      //for app or desktop
+      SingleChildScrollView(
         child: Column(
           crossAxisAlignment:CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
-              child: LabelText(text: "Welcome to Customer DashBoard"),
+              child: LabelText(text: "Worker Data Panel"),
             ),
-
             Wrap(
               children: [
                 CustomCard(
                   width:200,
                   height:150,
-                  color: AppColor.purpleAccent,
+                  color: AppColor.blueAccent,
                   children: [
                     Center(
                         child:Padding(padding:EdgeInsets.all(10),child:
@@ -58,7 +80,30 @@ class _CustomerScreenState extends State<CustomerScreen> {
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: LabelText(
-                        text: "Total Tickets:\n5000",
+                        text: "Total Workers:\n5000",
+                        color: AppColor.white,
+                        fontWeight:FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+
+                // total salary
+                CustomCard(
+                  width:200,
+                  height:150,
+                  color: AppColor.pinkAccent,
+                  children: [
+                    Center(
+                        child:Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: CustomIcon(icon:Icons.account_balance_wallet_rounded,color:AppColor.white,size:30,),
+                        )
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: LabelText(
+                        text: "Workers Salary:\n5000",
                         color: AppColor.white,
                         fontWeight:FontWeight.normal,
                       ),
@@ -68,7 +113,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                 CustomCard(
                   width:200,
                   height:150,
-                  color: AppColor.orangeAccent,
+                  color: AppColor.pinkAccent,
                   children: [
                     Center(
                         child:Padding(padding:EdgeInsets.all(10),child:
@@ -77,7 +122,26 @@ class _CustomerScreenState extends State<CustomerScreen> {
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: LabelText(
-                        text: "Problem Solved:\n5000",
+                        text: "Solved Tickets:\n5000",
+                        color: AppColor.white,
+                        fontWeight:FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+                CustomCard(
+                  width:200,
+                  height:150,
+                  color: AppColor.green,
+                  children: [
+                    Center(
+                        child:Padding(padding:EdgeInsets.all(10),child:
+                        CustomIcon(icon:Icons.account_box_outlined,size:30,color:AppColor.white))
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: LabelText(
+                        text: "Pending Tickets:\n5000",
                         color: AppColor.white,
                         fontWeight:FontWeight.normal,
                       ),
@@ -86,12 +150,8 @@ class _CustomerScreenState extends State<CustomerScreen> {
                 ),
               ],
             ),
-            //heading of recently tickets
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
-              child: LabelText(text: "Recently Tickets"),
-            ),
 
+            //work assign to admin through super admin
             Align(
               alignment: Alignment.centerRight,
               child: Wrap(
@@ -100,7 +160,7 @@ class _CustomerScreenState extends State<CustomerScreen> {
                     padding: EdgeInsets.all(10),
                     child: CustomTextButton(
                       callback: () {},
-                      text: "Generate",
+                      text: "Holiday List",
                       color: AppColor.white,
                       size: 17,
                       textDecoration: TextDecoration.none,
@@ -108,11 +168,12 @@ class _CustomerScreenState extends State<CustomerScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  //SizedBox(width:20),
                   Padding(
                     padding: EdgeInsets.all(10),
                     child: CustomTextButton(
                       callback: () {},
-                      text: "Update",
+                      text: "Meeting",
                       color: AppColor.white,
                       size: 17,
                       textDecoration: TextDecoration.none,
@@ -120,11 +181,12 @@ class _CustomerScreenState extends State<CustomerScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  //SizedBox(width:20),
                   Padding(
                     padding: EdgeInsets.all(10),
                     child: CustomTextButton(
                       callback: () {},
-                      text: "Delete",
+                      text: "Assign Work",
                       color: AppColor.white,
                       size: 17,
                       textDecoration: TextDecoration.none,
@@ -132,11 +194,12 @@ class _CustomerScreenState extends State<CustomerScreen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+                  //SizedBox(width:20),
                   Padding(
-                    padding: EdgeInsets.all(10),
+                    padding: EdgeInsets.fromLTRB(10, 10, 30, 10),
                     child: CustomTextButton(
                       callback: () {},
-                      text: "Notification",
+                      text: "Update Role",
                       color: AppColor.white,
                       size: 17,
                       textDecoration: TextDecoration.none,
@@ -147,7 +210,284 @@ class _CustomerScreenState extends State<CustomerScreen> {
                 ],
               ),
             ),
-            //viw recent tickets
+
+            //Worker Registration Data
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
+              child: LabelText(text: "Worker Data"),
+            ),
+
+            //Worker tickets
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Container(
+                padding: EdgeInsets.all(20),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: MediaQuery.of(context).size.width - 50,
+                  ),
+                  child: DataTable(
+                    border: TableBorder.all(width: 1),
+                    columns: [
+                      DataColumn(label: LabelText(text: "Id")),
+                      DataColumn(label: LabelText(text: "Name")),
+                      DataColumn(label: LabelText(text: "Email")),
+                      DataColumn(label: LabelText(text: "Address")),
+                      DataColumn(label: LabelText(text: "role")),
+                    ],
+                    rows: [
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            LabelText(
+                              text: "123e134",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Jayant",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "jayant62644@gmail.com",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Broken Product",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Pending",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            LabelText(
+                              text: "123e134",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Jayant",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "jayant62644@gmail.com",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Broken Product",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Pending",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            LabelText(
+                              text: "123e134",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Jayant",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "jayant62644@gmail.com",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Broken Product",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Pending",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            LabelText(
+                              text: "123e134",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Jayant",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "jayant62644@gmail.com",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Broken Product",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Pending",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            LabelText(
+                              text: "123e134",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Jayant",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "jayant62644@gmail.com",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Broken Product",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Pending",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            LabelText(
+                              text: "123e134",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Jayant",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "jayant62644@gmail.com",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Broken Product",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Pending",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                      DataRow(
+                        cells: [
+                          DataCell(
+                            LabelText(
+                              text: "123e134",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Jayant",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "jayant62644@gmail.com",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Broken Product",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          DataCell(
+                            LabelText(
+                              text: "Pendingl",
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+
+            //admin tickets heading
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
+              child: LabelText(text: "Worker Tickets"),
+            ),
+
+            //admin tickets
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Container(
@@ -403,121 +743,6 @@ class _CustomerScreenState extends State<CustomerScreen> {
                             ),
                           ),
                         ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            //make wave graph for tickets
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: SizedBox(
-                height: 250,
-                width: double.infinity,
-                child: LineChart(
-                  LineChartData(
-                    minY: 0,
-                    maxY: 800,
-                    titlesData: FlTitlesData(
-                      bottomTitles: AxisTitles(
-                        axisNameWidget: LabelText(text: "Years"),
-                        axisNameSize: 40,
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          getTitlesWidget: (value, meta) {
-                            const months = [
-                              '2014',
-                              '2015',
-                              '2016',
-                              '2017',
-                              '2018',
-                              '2019',
-                              '2020',
-                              '2021',
-                              '2022',
-                              '2023',
-                              '2024',
-                              '2025',
-                            ];
-                            return Text(
-                              months[value.toInt() % 12],
-                              style: TextStyle(fontSize: 10),
-                            );
-                          },
-                        ),
-                      ),
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: true),
-                      ),
-                    ),
-                    gridData: FlGridData(show: true),
-                    borderData: FlBorderData(show: false),
-                    lineBarsData: [
-                      // 🔶 Revenue Line
-                      LineChartBarData(
-                        spots: [
-                          FlSpot(0, 400),
-                          FlSpot(1, 450),
-                          FlSpot(2, 500),
-                          FlSpot(3, 550),
-                          FlSpot(4, 500),
-                          FlSpot(5, 650),
-                          FlSpot(6, 10),
-                          FlSpot(7, 50),
-                          FlSpot(8, 500),
-                          FlSpot(9, 20),
-                          FlSpot(10, 100),
-                          FlSpot(11, 10),
-                        ],
-                        isCurved: true,
-                        color: Colors.orange,
-                        barWidth: 3,
-                        dotData: FlDotData(show: false),
-                        belowBarData: BarAreaData(
-                          show: true,
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.blue.withOpacity(0.4),
-                              Colors.orange.withOpacity(0.1),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                        ),
-                      ),
-
-                      // 🔷 Expense Line
-                      LineChartBarData(
-                        spots: [
-                          FlSpot(0, 200),
-                          FlSpot(1, 250),
-                          FlSpot(2, 300),
-                          FlSpot(3, 350),
-                          FlSpot(4, 400),
-                          FlSpot(5, 420),
-                          FlSpot(6, 100),
-                          FlSpot(7, 440),
-                          FlSpot(8, 450),
-                          FlSpot(9, 560),
-                          FlSpot(10, 470),
-                          FlSpot(11, 880),
-                        ],
-                        isCurved: true,
-                        color: Colors.blue,
-                        barWidth: 3,
-                        dotData: FlDotData(show: false),
-                        belowBarData: BarAreaData(
-                          show: true,
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.orange.withOpacity(0.4),
-                              Colors.blue.withOpacity(0.1),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                        ),
                       ),
                     ],
                   ),
