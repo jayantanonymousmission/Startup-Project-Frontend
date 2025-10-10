@@ -1,6 +1,5 @@
 //import some libraries and files
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:startupproject/src/screens/Authorization/admin.dart';
 import 'package:startupproject/src/screens/admin/customer.dart';
@@ -56,22 +55,7 @@ class _ReportAnalysisOfAdminState
         ],
       ),
       //for web
-      body: kIsWeb
-          ? SingleChildScrollView(
-        child: Column(
-          children: [
-            //Text("Super Admin Web"),
-            //Card
-            Card(
-              color: Colors.red,
-              child: LabelText(text: "Card"),
-            ),
-          ],
-        ),
-      )
-          :
-      //for app or desktop
-      SingleChildScrollView(
+      body:SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -1,11 +1,8 @@
 //import some libraries and files
 import 'package:flutter/material.dart';
 import 'package:startupproject/src/screens/Authorization/employee.dart';
-import 'package:startupproject/src/screens/Authorization/super_admin.dart';
 import 'package:startupproject/src/screens/employee/report_analysis.dart';
 import 'package:startupproject/src/screens/employee/worker.dart';
-import 'package:startupproject/src/screens/super_admin/admin.dart';
-import 'package:startupproject/src/screens/super_admin/report_analysis.dart';
 import 'package:startupproject/src/storage/constant/constants.dart';
 import 'package:startupproject/src/storage/custom_widgets/custom_card.dart';
 import 'package:startupproject/src/storage/custom_widgets/drawer.dart';

@@ -1,11 +1,10 @@
 //import some libraries and files
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:startupproject/src/screens/Authorization/super_admin.dart';
+import 'package:startupproject/src/screens/employee/customer.dart';
+import 'package:startupproject/src/screens/employee/report_analysis.dart';
 import 'package:startupproject/src/screens/employee/view_all_tickets.dart';
-import 'package:startupproject/src/screens/super_admin/customer.dart';
-import 'package:startupproject/src/screens/super_admin/report_analysis.dart';
-import 'package:startupproject/src/screens/super_admin/worker.dart';
+import 'package:startupproject/src/screens/employee/worker.dart';
 import 'package:startupproject/src/storage/constant/constants.dart';
 import 'package:startupproject/src/storage/custom_widgets/custom_card.dart';
 import 'package:startupproject/src/storage/custom_widgets/drawer.dart';
@@ -13,7 +12,6 @@ import 'package:startupproject/src/storage/custom_widgets/drawer_header.dart';
 import 'package:startupproject/src/storage/custom_widgets/icon.dart';
 import 'package:startupproject/src/storage/custom_widgets/list_tile.dart';
 import 'package:startupproject/src/storage/custom_widgets/text_field.dart';
-
 import '../../utility/sharedPreferences/shared_preferences.dart';
 
 class EmployeeScreen extends StatefulWidget {
@@ -30,15 +28,15 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
       drawer: Drawers(
         children: [
           CustomDrawerHeader(name: "Jayant", email: "jayant62644@gmail.com"),
-          ListTiles(text: "DashBoard", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>SuperAdminScreen()));},),
+          ListTiles(text: "DashBoard", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>EmployeeScreen()));},),
           Divider(),
           ListTiles(text: "View All Tickets", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>ViewAllTicketsOfEmployee()));},),
           Divider(),
-          ListTiles(text: "Report Analysis", icon: Icons.analytics,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>ReportAnalysisOfSuperAdmin()));}),
+          ListTiles(text: "Report Analysis", icon: Icons.analytics,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>ReportAnalysisOfEmployee()));}),
           Divider(),
-          ListTiles(text: "Workers", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>WorkerInSuperAdmin()));}),
+          ListTiles(text: "Workers", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>WorkerInEmployee()));}),
           Divider(),
-          ListTiles(text: "Customers", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>CustomerInSuperAdmin()));}),
+          ListTiles(text: "Customers", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>CustomerInEmployee()));}),
           Divider(),
           ListTiles(text: "Logout", icon: Icons.logout,callback:(){freeSharedPreferences(context);}),
           Divider(),
@@ -65,7 +63,7 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
-              child: LabelText(text: "Welcome to SuperAdmin DashBoard"),
+              child: LabelText(text: "Welcome to Employee DashBoard"),
             ),
             Wrap(
               children: [
@@ -107,45 +105,6 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                     ),
                   ],
                 ),
-                CustomCard(
-                  width:200,
-                  height:150,
-                  color: AppColor.purpleAccent,
-                  children: [
-                    Center(
-                        child:Padding(padding:EdgeInsets.all(10),child:
-                        CustomIcon(icon:Icons.account_box_outlined,size:30,color:AppColor.white))
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: LabelText(
-                        text: "Total Employees:\n5000",
-                        color: AppColor.white,
-                        fontWeight:FontWeight.normal,
-                      ),
-                    ),
-                  ],
-                ),
-                CustomCard(
-                  width:200,
-                  height:150,
-                  color: AppColor.orangeAccent,
-                  children: [
-                    Center(
-                        child:Padding(padding:EdgeInsets.all(10),child:
-                        CustomIcon(icon:Icons.account_box_outlined,size:30,color:AppColor.white))
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: LabelText(
-                        text: "Total Admin:\n5000",
-                        color: AppColor.white,
-                        fontWeight:FontWeight.normal,
-                      ),
-                    ),
-                  ],
-                ),
-
                 // total salary
                 CustomCard(
                   width:200,
@@ -162,48 +121,6 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                       padding: const EdgeInsets.all(10),
                       child: LabelText(
                         text: "Workers Salary:\n5000",
-                        color: AppColor.white,
-                        fontWeight:FontWeight.normal,
-                      ),
-                    ),
-                  ],
-                ),
-                CustomCard(
-                  width:200,
-                  height:150,
-                  color: AppColor.cyan,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Center(
-                          child:CustomIcon(icon:Icons.account_balance_wallet_rounded,color:AppColor.white,size:30,)
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: LabelText(
-                        text: "Employee Salary:\n5000",
-                        color: AppColor.white,
-                        fontWeight:FontWeight.normal,
-                      ),
-                    ),
-                  ],
-                ),
-                CustomCard(
-                  width:200,
-                  height:150,
-                  color: AppColor.grey,
-                  children: [
-                    Center(
-                        child:Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: CustomIcon(icon:Icons.account_balance_wallet_rounded,color:AppColor.white,size:30,),
-                        )
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: LabelText(
-                        text: "Admin Salary:\n5000",
                         color: AppColor.white,
                         fontWeight:FontWeight.normal,
                       ),

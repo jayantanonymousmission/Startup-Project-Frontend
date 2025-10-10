@@ -46,19 +46,7 @@ class _WorkerInEmployeeState extends State<WorkerInEmployee> {
         ],
       ),
       //for web
-      body: kIsWeb
-          ? SingleChildScrollView(
-        child: Column(
-          children: [
-            Text("Admin Web"),
-            //Card
-            Card(color: Colors.red, child:LabelText(text:"Card")),
-          ],
-        ),
-      )
-          :
-      //for app or desktop
-      SingleChildScrollView(
+      body:SingleChildScrollView(
         child: Column(
           crossAxisAlignment:CrossAxisAlignment.start,
           children: [

@@ -1,7 +1,12 @@
 //import some libraries and files
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:startupproject/src/screens/Authorization/admin.dart';
 import 'package:startupproject/src/screens/Authorization/super_admin.dart';
+import 'package:startupproject/src/screens/admin/customer.dart';
+import 'package:startupproject/src/screens/admin/employee.dart';
+import 'package:startupproject/src/screens/admin/report_analysis.dart';
+import 'package:startupproject/src/screens/admin/worker.dart';
 import 'package:startupproject/src/storage/constant/constants.dart';
 import 'package:startupproject/src/storage/custom_widgets/custom_card.dart';
 import 'package:startupproject/src/storage/custom_widgets/drawer.dart';
@@ -26,11 +31,64 @@ class _ViewAllTicketsOfAdminState extends State<ViewAllTicketsOfAdmin> {
       drawer: Drawers(
         children: [
           CustomDrawerHeader(name: "Jayant", email: "jayant62644@gmail.com"),
-          ListTiles(text: "DashBoard", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>SuperAdminScreen()));},),
+          ListTiles(
+            text: "DashBoard",
+            icon: Icons.home,
+            callback: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>AdminScreen()),
+              );
+            },
+          ),
           Divider(),
-          ListTiles(text: "View All Tickets", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>SuperAdminScreen()));},),
+          ListTiles(
+            text: "Report Analysis",
+            icon: Icons.analytics,
+            callback: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ReportAnalysisOfAdmin(),
+                ),
+              );
+            },
+          ),
           Divider(),
-          ListTiles(text: "Logout", icon: Icons.logout,callback:(){freeSharedPreferences(context);}),
+          ListTiles(
+            text: "Employees",
+            icon: Icons.face,
+            callback: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => EmployeeInAdmin()),
+              );
+            },
+          ),
+          Divider(),
+          ListTiles(
+            text: "Workers",
+            icon: Icons.face,
+            callback: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => WorkerInAdmin()),
+              );
+            },
+          ),
+          Divider(),
+          ListTiles(
+            text: "Customers",
+            icon: Icons.face,
+            callback: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CustomerInAdmin()),
+              );
+            },
+          ),
+          Divider(),
+          ListTiles(text: "Logout", icon: Icons.logout,callback:(){freeSharedPreferences(context);},),
           Divider(),
           ListTiles(text: "Back", icon: Icons.arrow_forward_ios,callback:(){Navigator.pop(context);},),
           Divider(),
@@ -43,7 +101,7 @@ class _ViewAllTicketsOfAdminState extends State<ViewAllTicketsOfAdmin> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
-              child: LabelText(text: "Welcome to Worker DashBoard"),
+              child: LabelText(text: "Welcome to Admin Tickets"),
             ),
 
             Wrap(

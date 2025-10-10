@@ -2,7 +2,9 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:startupproject/src/screens/Authorization/employee.dart';
-import 'package:startupproject/src/screens/Authorization/super_admin.dart';
+import 'package:startupproject/src/screens/employee/customer.dart';
+import 'package:startupproject/src/screens/employee/report_analysis.dart';
+import 'package:startupproject/src/screens/employee/worker.dart';
 import 'package:startupproject/src/storage/constant/constants.dart';
 import 'package:startupproject/src/storage/custom_widgets/custom_card.dart';
 import 'package:startupproject/src/storage/custom_widgets/drawer.dart';
@@ -29,7 +31,11 @@ class _ViewAllTicketsOfEmployeeState extends State<ViewAllTicketsOfEmployee> {
           CustomDrawerHeader(name: "Jayant", email: "jayant62644@gmail.com"),
           ListTiles(text: "DashBoard", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>EmployeeScreen()));},),
           Divider(),
-          ListTiles(text: "View All Tickets", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>ViewAllTicketsOfEmployee()));},),
+          ListTiles(text: "Report Analysis", icon: Icons.analytics,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>ReportAnalysisOfEmployee()));}),
+          Divider(),
+          ListTiles(text: "Workers", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>WorkerInEmployee()));},),
+          Divider(),
+          ListTiles(text: "Customers", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>CustomerInEmployee()));},),
           Divider(),
           ListTiles(text: "Logout", icon: Icons.logout,callback:(){freeSharedPreferences(context);},),
           Divider(),
@@ -44,7 +50,7 @@ class _ViewAllTicketsOfEmployeeState extends State<ViewAllTicketsOfEmployee> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
-              child: LabelText(text: "Welcome to Worker DashBoard"),
+              child: LabelText(text: "Welcome to Employee Tickets"),
             ),
 
             Wrap(
