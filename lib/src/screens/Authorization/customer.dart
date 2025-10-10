@@ -26,11 +26,11 @@ class _CustomerScreenState extends State<CustomerScreen> {
       drawer: Drawers(
         children: [
           CustomDrawerHeader(name: "Jayant", email: "jayant62644@gmail.com"),
-          ListTiles(text: "DashBoard", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>SuperAdminScreen()));},),
+          ListTiles(text: "DashBoard", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>CustomerScreen()));},),
           Divider(),
           ListTiles(text: "Logout", icon: Icons.logout,callback:(){freeSharedPreferences(context);},),
           Divider(),
-          ListTiles(text: "Back", icon: Icons.arrow_forward_ios),
+          ListTiles(text: "Back", icon: Icons.arrow_forward_ios,callback:(){Navigator.pop(context);},),
           Divider(),
         ],
       ),
