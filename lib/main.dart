@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
           }
 
           if (snapshot.hasData) {
-            return snapshot.data!; // 👈 yahan tumhara Customer/Admin... screen milega
+            return snapshot.data!;
           }
 
           return EmailVerificationScreen(); // default fallback
