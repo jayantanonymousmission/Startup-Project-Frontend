@@ -1,12 +1,10 @@
 //import some libraries and files
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:startupproject/src/models/Tickting/tickting.dart';
 import 'package:startupproject/src/screens/Authorization/employee.dart';
-import 'package:startupproject/src/screens/Authorization/super_admin.dart';
 import 'package:startupproject/src/screens/employee/customer.dart';
 import 'package:startupproject/src/screens/employee/report_analysis.dart';
-import 'package:startupproject/src/screens/super_admin/admin.dart';
-import 'package:startupproject/src/screens/super_admin/report_analysis.dart';
+import 'package:startupproject/src/screens/employee/view_all_tickets.dart';
 import 'package:startupproject/src/storage/constant/constants.dart';
 import 'package:startupproject/src/storage/custom_widgets/custom_card.dart';
 import 'package:startupproject/src/storage/custom_widgets/drawer.dart';
@@ -15,7 +13,12 @@ import 'package:startupproject/src/storage/custom_widgets/icon.dart';
 import 'package:startupproject/src/storage/custom_widgets/list_tile.dart';
 import 'package:startupproject/src/storage/custom_widgets/text_button.dart';
 import 'package:startupproject/src/storage/custom_widgets/text_field.dart';
+import 'package:startupproject/src/storage/custom_widgets/text_form_field.dart';
+import 'package:startupproject/src/utility/controllerFunctions/totalRole/workers.dart';
+import 'package:startupproject/src/utility/controllerFunctions/totalStatus/totalStatus.dart';
 import 'package:startupproject/src/utility/sharedPreferences/shared_preferences.dart';
+import '../../api/UpdateRole/updateRole.dart';
+import '../../utility/controllerFunctions/recentlyTIckets/recentlyTIcketsOfWorker.dart';
 
 class WorkerInEmployee extends StatefulWidget {
   const WorkerInEmployee({super.key});
@@ -24,14 +27,101 @@ class WorkerInEmployee extends StatefulWidget {
 }
 
 class _WorkerInEmployeeState extends State<WorkerInEmployee> {
+  //create some variable
+  int totalWorkers=0;
+  List<Map<String,dynamic>> totalStatus = [];
+  final _formKey = GlobalKey<FormState>();
+  String selectedRole="customer";
+  TextEditingController idController = TextEditingController();
+  List<TicktingModel>? ticketData = [];
+
+  @override
+  void initState() {
+    //total worker
+    totalWorkersRoleControllerFunction(
+        context: context,
+        onValueFetched:(value) {
+          if (mounted) {
+            setState(() {
+              totalWorkers = value;
+            });
+          }
+        }
+    );
+    //total status
+    totalStausControllerFunction(
+        context: context,
+        onValueFetched: (value) {
+          if (mounted) {
+            setState(() {
+              totalStatus = value;
+            });
+          }
+        }
+    );
+    //Recently Tickets
+    recentlyTicketsOfWorkerControllerFunction(
+      context: context,
+      onValueFetched: (List<TicktingModel> data) {
+        if (mounted) {
+          setState(() {
+            ticketData = data;
+          });
+        }
+      }
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  //controller functions
+  //Update Role
+  void updateRole() async {
+    final role = await UpdateRole.updateRoleFunction(
+      idController.text.trim(),
+      selectedRole
+    );
+    //checking conditions
+    final messenger = ScaffoldMessenger.of(
+      Navigator.of(context, rootNavigator: true).context,
+    );
+
+    if (role != null) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text("Role Successfully Updated"),
+          backgroundColor: AppColor.blueAccent,
+        ),
+      );
+      Navigator.pop(context); // Close the dialog after success
+    } else {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text("Role Not Updated"),
+          backgroundColor: AppColor.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    String formattedStatusText = totalStatus.isNotEmpty
+        ? totalStatus.map((e) => "${e['status']}: ${e['count']}").join("\n")
+        : "No Data";
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.lightBlueAccent),
       drawer: Drawers(
         children: [
           CustomDrawerHeader(name: "Jayant", email: "jayant62644@gmail.com"),
           ListTiles(text: "DashBoard", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>EmployeeScreen()));},),
+          Divider(),
+          ListTiles(text: "View All Tickets", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>ViewAllTicketsOfEmployee()));},),
           Divider(),
           ListTiles(text: "Report Analysis", icon: Icons.analytics,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>ReportAnalysisOfEmployee()));}),
           Divider(),
@@ -68,7 +158,7 @@ class _WorkerInEmployeeState extends State<WorkerInEmployee> {
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: LabelText(
-                        text: "Total Workers:\n5000",
+                        text: "Total Workers:\n$totalWorkers",
                         color: AppColor.white,
                         fontWeight:FontWeight.normal,
                       ),
@@ -110,26 +200,7 @@ class _WorkerInEmployeeState extends State<WorkerInEmployee> {
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: LabelText(
-                        text: "Solved Tickets:\n5000",
-                        color: AppColor.white,
-                        fontWeight:FontWeight.normal,
-                      ),
-                    ),
-                  ],
-                ),
-                CustomCard(
-                  width:200,
-                  height:150,
-                  color: AppColor.green,
-                  children: [
-                    Center(
-                        child:Padding(padding:EdgeInsets.all(10),child:
-                        CustomIcon(icon:Icons.account_box_outlined,size:30,color:AppColor.white))
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: LabelText(
-                        text: "Pending Tickets:\n5000",
+                        text: "Solved Tickets:\n$formattedStatusText",
                         color: AppColor.white,
                         fontWeight:FontWeight.normal,
                       ),
@@ -182,11 +253,140 @@ class _WorkerInEmployeeState extends State<WorkerInEmployee> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  //SizedBox(width:20),
+
                   Padding(
-                    padding: EdgeInsets.fromLTRB(10, 10, 30, 10),
+                    padding: EdgeInsets.all(10),
                     child: CustomTextButton(
-                      callback: () {},
+                      callback: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => Dialog(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: LabelText(text: "Update Role"),
+                                  ),
+                                  Form(
+                                    key: _formKey,
+                                    child: Column(
+                                      children: [
+                                        CustomTextField(
+                                          text: "Enter Mobile Number",
+                                          controller:idController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: DropdownButtonFormField<String>(
+                                            value: selectedRole,
+                                            items: ['admin',"superAdmin",'customer','employee','worker']
+                                                .map(
+                                                  (level) => DropdownMenuItem(
+                                                value: level,
+                                                child: Text(level),
+                                              ),
+                                            )
+                                                .toList(),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                selectedRole = value!;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                              labelText: "Complaint Level",
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.blue,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.blue,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              errorBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              focusedErrorBorder:
+                                              OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                            ),
+                                            validator: (value) => value == null
+                                                ? 'Please select a Complaint Level'
+                                                : null,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: CustomTextButton(
+                                            callback: () {
+                                              Navigator.pop(context);
+                                            },
+                                            text: "Quit",
+                                            color: AppColor.green,
+                                            size: 20,
+                                            textDecoration: TextDecoration.none,
+                                            backgroundColor:
+                                            AppColor.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: CustomTextButton(
+                                            callback: () {
+                                              if (_formKey.currentState!
+                                                  .validate()) {
+                                                updateRole();
+                                              }
+                                            },
+                                            text: "Update",
+                                            color: AppColor.blueAccent,
+                                            size: 20,
+                                            textDecoration: TextDecoration.none,
+                                            backgroundColor:
+                                            AppColor.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                       text: "Update Role",
                       color: AppColor.white,
                       size: 17,
@@ -223,246 +423,32 @@ class _WorkerInEmployeeState extends State<WorkerInEmployee> {
                       DataColumn(label: LabelText(text: "Address")),
                       DataColumn(label: LabelText(text: "role")),
                     ],
-                    rows: [
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
+                      rows: ticketData!.map((ticket) {
+                        return DataRow(
+                          cells: [
+                            DataCell(LabelText(
+                              text: ticket.ticket_id ?? '',
                               fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
+                            )),
+                            DataCell(LabelText(
+                              text: ticket.product_name ?? '',
                               fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
+                            )),
+                            DataCell(LabelText(
+                              text: ticket.mobile_number?.toString() ?? '',
                               fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
+                            )),
+                            DataCell(LabelText(
+                              text: ticket.complaint_title ?? '',
                               fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
+                            )),
+                            DataCell(LabelText(
+                              text: ticket.status ?? '',
                               fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pendingl",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            )),
+                          ],
+                        );
+                      }).toList(),
                   ),
                 ),
               ),
@@ -493,246 +479,32 @@ class _WorkerInEmployeeState extends State<WorkerInEmployee> {
                       DataColumn(label: LabelText(text: "title")),
                       DataColumn(label: LabelText(text: "status")),
                     ],
-                    rows: [
-                      DataRow(
+                    rows: ticketData!.map((ticket) {
+                      return DataRow(
                         cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
+                          DataCell(LabelText(
+                            text: ticket.ticket_id ?? '',
+                            fontWeight: FontWeight.normal,
+                          )),
+                          DataCell(LabelText(
+                            text: ticket.product_name ?? '',
+                            fontWeight: FontWeight.normal,
+                          )),
+                          DataCell(LabelText(
+                            text: ticket.mobile_number?.toString() ?? '',
+                            fontWeight: FontWeight.normal,
+                          )),
+                          DataCell(LabelText(
+                            text: ticket.complaint_title ?? '',
+                            fontWeight: FontWeight.normal,
+                          )),
+                          DataCell(LabelText(
+                            text: ticket.status ?? '',
+                            fontWeight: FontWeight.normal,
+                          )),
                         ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pendingl",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                      );
+                    }).toList(),
                   ),
                 ),
               ),

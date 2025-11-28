@@ -5,16 +5,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:startupproject/src/models/Tickting/tickting.dart';
 
 //create class
-class RecentlyTickets{
-   //create recently tickets of api
-  static Future<List<TicktingModel>?> recentlyTicketsFunction() async {
+class RecentlyTicketsOfWorkers{
+  //create recently tickets of api
+  static Future<List<TicktingModel>?> recentlyTicketsOfWorkersFunction() async {
     //create variable
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString("token");
     //use exception handling for handling the data
     try {
       //create variables
-      final uri = Uri.parse("http://192.168.31.247:5000/count/recentlyRoleBasedTickets");
+      final uri = Uri.parse("http://10.183.99.138:5000/count/recentlyRoleBasedTickets/worker");
 
       //use http post for putting the data to backend
       final response = await http.get(
@@ -24,12 +24,10 @@ class RecentlyTickets{
           "Authorization": "Bearer $token",
         },
       );
-      print(response.statusCode);
-      print(response.body);
+      //checking condition
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final List<dynamic>fetchedData = data['recentlyTickets'];
-        print(fetchedData);
         return fetchedData.map((e) => TicktingModel.fromJson(e)).toList();
 
       } else {

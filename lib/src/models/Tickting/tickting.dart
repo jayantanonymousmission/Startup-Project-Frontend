@@ -13,6 +13,7 @@ class TicktingModel{
   final String ? complaint_description;
   final String ? product_image;
   final String ? comment;
+  final String ? message;
   //create constructor
   TicktingModel({
     this.ticket_id,
@@ -26,6 +27,7 @@ class TicktingModel{
     this.complaint_description,
     this.product_image,
     this.comment,
+    this.message
   });
 
   //create factory function for convert raw data into json
@@ -42,6 +44,7 @@ class TicktingModel{
       complaint_description: json['complaint_description'],
       product_image:json['product_image']?.toString() ,
       comment:json['comment']?.toString(),
+      message:json['message']?.toString(),
     );
   }
 }

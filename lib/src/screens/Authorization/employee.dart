@@ -1,6 +1,6 @@
 //import some libraries and files
 import 'package:flutter/material.dart';
-import 'package:startupproject/src/models/Tickting/tickting.dart';
+import 'package:startupproject/src/models/Registration/registration.dart';
 import 'package:startupproject/src/screens/employee/customer.dart';
 import 'package:startupproject/src/screens/employee/report_analysis.dart';
 import 'package:startupproject/src/screens/employee/view_all_tickets.dart';
@@ -12,7 +12,7 @@ import 'package:startupproject/src/storage/custom_widgets/drawer_header.dart';
 import 'package:startupproject/src/storage/custom_widgets/icon.dart';
 import 'package:startupproject/src/storage/custom_widgets/list_tile.dart';
 import 'package:startupproject/src/storage/custom_widgets/text_field.dart';
-import 'package:startupproject/src/utility/controllerFunctions/recentlyTIckets/recently_tickets.dart';
+import 'package:startupproject/src/utility/controllerFunctions/registrationData/registrationData.dart';
 import 'package:startupproject/src/utility/controllerFunctions/totalRole/customers.dart';
 import 'package:startupproject/src/utility/controllerFunctions/totalRole/workers.dart';
 import '../../utility/sharedPreferences/shared_preferences.dart';
@@ -25,9 +25,9 @@ class EmployeeScreen extends StatefulWidget {
 
 class _EmployeeScreenState extends State<EmployeeScreen> {
   //create some variables
-  int TotalCustomers=0;
-  int TotalWorkers=0;
-  List<TicktingModel> ? ticketData = [];
+  int totalCustomers=0;
+  int totalWorkers=0;
+  List<RegistrationModel> ? registrationData = [];
 
   @override
   void initState() {
@@ -36,33 +36,40 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
     totalCustomerRoleControllerFunction(
       context: context,
       onValueFetched: (value) {
-        setState(() {
-          TotalCustomers = value;
-        });
+        if(mounted) {
+          setState(() {
+            totalCustomers = value;
+          });
+        }
       },
     );
     //Total Workers
     totalWorkersRoleControllerFunction(
       context: context,
       onValueFetched: (value) {
-        setState(() {
-          TotalWorkers = value;
-        });
+        if(mounted) {
+          setState(() {
+            totalWorkers = value;
+          });
+        }
       },
     );
-    //Recently Tickets
-    recentlyTicketsControllerFunction(
-      context: context,
-      onValueFetched: (List<TicktingModel> data) {
-        setState(() {
-          ticketData = data;
-          print(ticketData);
-        });
-      },
+    //User Data
+    registrationUserDataControllerFunction(
+        context: context,
+        onValueFetched:(List<RegistrationModel> data){
+          if (mounted) {
+            setState(() {
+              registrationData = data;
+            });
+          }
+        }
     );
   }
+
   @override
   void dispose() {
+    // TODO: implement dispose
     super.dispose();
   }
   @override
@@ -111,7 +118,7 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: LabelText(
-                        text: "Total Customers:\n$TotalCustomers",color: AppColor.white,fontWeight:FontWeight.normal),
+                        text: "Total Customers:\n$totalCustomers",color: AppColor.white,fontWeight:FontWeight.normal),
                     ),
                   ],
                 ),
@@ -127,7 +134,7 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: LabelText(
-                        text: "Total Workers:\n$TotalWorkers",color: AppColor.white,fontWeight:FontWeight.normal,
+                        text: "Total Workers:\n$totalWorkers",color: AppColor.white,fontWeight:FontWeight.normal,
                       ),
                     ),
                   ],
@@ -158,7 +165,7 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
-              child: LabelText(text: "Recently Tickets"),
+              child: LabelText(text: "Registration Data"),
             ),
 
             //viw recent tickets
@@ -171,34 +178,40 @@ class _EmployeeScreenState extends State<EmployeeScreen> {
                     minWidth: MediaQuery.of(context).size.width - 50,
                   ),
                     child:DataTable(
+                      border: TableBorder.all(width: 1),
                       columns: const [
-                        DataColumn(label: Text('Ticket ID')),
-                        DataColumn(label: Text('Product Name')),
-                        DataColumn(label: Text('Mobile Number')),
-                        DataColumn(label: Text('Complaint Title')),
-                        DataColumn(label: Text('Status')),
+                        DataColumn(label: LabelText(text:'Id')),
+                        DataColumn(label: LabelText(text:'Name')),
+                        DataColumn(label: LabelText(text:'Email')),
+                        DataColumn(label: LabelText(text:'Gender')),
+                        DataColumn(label: LabelText(text:'Address')),
+                        DataColumn(label: LabelText(text:'Role')),
                       ],
-                      rows: ticketData!.map((ticket) {
+                      rows: registrationData!.map((registration){
                         return DataRow(
                           cells: [
                             DataCell(LabelText(
-                              text: ticket.ticket_id ?? '',
+                              text:registration.id ?? "",
                               fontWeight: FontWeight.normal,
                             )),
                             DataCell(LabelText(
-                              text: ticket.product_name ?? '',
+                              text:registration.name ?? '',
                               fontWeight: FontWeight.normal,
                             )),
                             DataCell(LabelText(
-                              text: ticket.mobile_number?.toString() ?? '',
+                              text:registration.email ?? '',
                               fontWeight: FontWeight.normal,
                             )),
                             DataCell(LabelText(
-                              text: ticket.complaint_title ?? '',
+                              text:registration.gender ?? '',
                               fontWeight: FontWeight.normal,
                             )),
                             DataCell(LabelText(
-                              text: ticket.status ?? '',
+                              text:registration.address ?? '',
+                              fontWeight: FontWeight.normal,
+                            )),
+                            DataCell(LabelText(
+                              text:registration.role ?? '',
                               fontWeight: FontWeight.normal,
                             )),
                           ],

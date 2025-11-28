@@ -10,7 +10,7 @@ class LoginModel{
     //use try catch for handling errors
     try {
       //create variables
-      final uri=Uri.parse("http://10.167.252.138:5000/auth/login");
+      final uri=Uri.parse("http://10.183.99.138:5000/auth/login");
 
       //for handling post request use post method
       final response =await http.post(

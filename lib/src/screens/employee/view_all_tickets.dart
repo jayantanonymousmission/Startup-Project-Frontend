@@ -1,6 +1,8 @@
 //import some libraries and files
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:startupproject/src/api/TicketsCurdOperation/Generate/generate.dart';
+import 'package:startupproject/src/models/Tickting/tickting.dart';
 import 'package:startupproject/src/screens/Authorization/employee.dart';
 import 'package:startupproject/src/screens/employee/customer.dart';
 import 'package:startupproject/src/screens/employee/report_analysis.dart';
@@ -13,40 +15,284 @@ import 'package:startupproject/src/storage/custom_widgets/icon.dart';
 import 'package:startupproject/src/storage/custom_widgets/list_tile.dart';
 import 'package:startupproject/src/storage/custom_widgets/text_button.dart';
 import 'package:startupproject/src/storage/custom_widgets/text_field.dart';
+import 'package:startupproject/src/storage/custom_widgets/text_form_field.dart';
+import 'package:startupproject/src/utility/controllerFunctions/totalStatus/totalStatus.dart';
+import 'package:startupproject/src/utility/controllerFunctions/totalTickets/admin.dart';
 import 'package:startupproject/src/utility/sharedPreferences/shared_preferences.dart';
+import '../../api/TicketsCurdOperation/delete/delete.dart';
+import '../../api/TicketsCurdOperation/update/update.dart';
+import '../../utility/controllerFunctions/recentlyTIckets/recentlyTicketsOfEmployee.dart';
 
 class ViewAllTicketsOfEmployee extends StatefulWidget {
   const ViewAllTicketsOfEmployee({super.key});
   @override
-  State<ViewAllTicketsOfEmployee> createState() => _ViewAllTicketsOfEmployeeState();
+  State<ViewAllTicketsOfEmployee> createState() =>
+      _ViewAllTicketsOfEmployeeState();
 }
 
 class _ViewAllTicketsOfEmployeeState extends State<ViewAllTicketsOfEmployee> {
+  //create some variable
+  int totalTickets = 0;
+  List<Map<String, dynamic>> totalStatus = [];
+  List<TicktingModel>? ticketData = [];
+  String selectedStatus = 'open';
+  String selectedComplaintLevel = 'low';
+  String selectedCategoryType = "delivery_issue";
+  final _formKey = GlobalKey<FormState>();
+
+  //create controllers
+  TextEditingController ticketIdController=TextEditingController();
+  TextEditingController mobileController = TextEditingController();
+  TextEditingController complaintDateController = TextEditingController();
+  TextEditingController productNumberController = TextEditingController();
+  TextEditingController productNameController = TextEditingController();
+  TextEditingController complaintLevelController = TextEditingController();
+  TextEditingController statusController = TextEditingController();
+  TextEditingController categoryTypeController = TextEditingController();
+  TextEditingController complaintTitleController = TextEditingController();
+  TextEditingController complaintDescriptionController = TextEditingController();
+  TextEditingController productImageController = TextEditingController();
+  TextEditingController commentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    //Total tickets
+    totalTicketOfEmployeeControllerFunction(
+      context: context,
+      onValueFetched: (value) {
+        if(mounted) {
+          setState(() {
+            totalTickets = value;
+          });
+        }
+      },
+    );
+    //Total Status
+    totalStausControllerFunction(
+      context: context,
+      onValueFetched: (value) {
+        if(mounted) {
+          setState(() {
+            totalStatus = value;
+          });
+        }
+      },
+    );
+    //Recently Tickets
+    recentlyTicketsOfEmployeeControllerFunction(
+      context: context,
+      onValueFetched: (List<TicktingModel> data) {
+        if(mounted) {
+          setState(() {
+            ticketData = data;
+          });
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  //controller functions
+  //generate ticket
+  void generateTicket() async {
+    final ticket = await GenerateTicket.generateTicketFunction(
+      int.parse(mobileController.text.trim()),
+      complaintDateController.text.trim(),
+      int.parse(productNumberController.text.trim()),
+      productNameController.text.trim(),
+      selectedComplaintLevel,
+      selectedStatus,
+      selectedCategoryType,
+      complaintTitleController.text.trim(),
+      complaintDescriptionController.text.trim(),
+      productImageController.text.trim(),
+      commentController.text.trim(),
+    );
+    //checking conditions
+    final messenger = ScaffoldMessenger.of(
+      Navigator.of(context, rootNavigator: true).context,
+    );
+
+    if (ticket != null) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text("Ticket Successfully Generated"),
+          backgroundColor: AppColor.blueAccent,
+        ),
+      );
+      Navigator.pop(context); // Close the dialog after success
+    } else {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text("Ticket Not Generated"),
+          backgroundColor: AppColor.red,
+        ),
+      );
+    }
+  }
+
+  //update ticket
+  void updateTicket() async {
+    final ticket = await UpdateTicket.updateTicketFunction(
+      ticketIdController.text.trim(),
+      int.parse(mobileController.text.trim()),
+      int.parse(productNumberController.text.trim()),
+      productNameController.text.trim(),
+      selectedComplaintLevel,
+      selectedCategoryType,
+      complaintTitleController.text.trim(),
+      complaintDescriptionController.text.trim(),
+      productImageController.text.trim(),
+      commentController.text.trim(),
+    );
+    //checking conditions
+    final messenger = ScaffoldMessenger.of(
+      Navigator.of(context, rootNavigator: true).context,
+    );
+
+    if (ticket != null) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text("Ticket Successfully Updated"),
+          backgroundColor: AppColor.blueAccent,
+        ),
+      );
+      Navigator.pop(context); // Close the dialog after success
+    } else {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text("Ticket Not Updated"),
+          backgroundColor: AppColor.red,
+        ),
+      );
+    }
+  }
+
+  //delete ticket
+  void deleteTicket() async {
+    final ticket = await DeleteTicket.deleteTicketFunction(
+      ticketIdController.text.trim(),
+    );
+    //checking conditions
+    final messenger = ScaffoldMessenger.of(
+      Navigator.of(context, rootNavigator: true).context,
+    );
+
+    if (ticket != null) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text("Ticket Successfully Deleted"),
+          backgroundColor: AppColor.blueAccent,
+        ),
+      );
+      Navigator.pop(context); // Close the dialog after success
+    } else {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text("Ticket Not Delete"),
+          backgroundColor: AppColor.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    String formattedStatusText = totalStatus.isNotEmpty
+        ? totalStatus.map((e) => "${e['status']}: ${e['count']}").join("\n")
+        : "No Data";
+
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.lightBlueAccent),
       drawer: Drawers(
         children: [
           CustomDrawerHeader(name: "Jayant", email: "jayant62644@gmail.com"),
-          ListTiles(text: "DashBoard", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>EmployeeScreen()));},),
+          ListTiles(
+            text: "DashBoard",
+            icon: Icons.home,
+            callback: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => EmployeeScreen()),
+              );
+            },
+          ),
           Divider(),
-          ListTiles(text: "Report Analysis", icon: Icons.analytics,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>ReportAnalysisOfEmployee()));}),
+          ListTiles(
+            text: "View All Tickets",
+            icon: Icons.home,
+            callback: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ViewAllTicketsOfEmployee(),
+                ),
+              );
+            },
+          ),
           Divider(),
-          ListTiles(text: "Workers", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>WorkerInEmployee()));},),
+          ListTiles(
+            text: "Report Analysis",
+            icon: Icons.analytics,
+            callback: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ReportAnalysisOfEmployee(),
+                ),
+              );
+            },
+          ),
           Divider(),
-          ListTiles(text: "Customers", icon: Icons.face,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>CustomerInEmployee()));},),
+          ListTiles(
+            text: "Workers",
+            icon: Icons.face,
+            callback: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => WorkerInEmployee()),
+              );
+            },
+          ),
           Divider(),
-          ListTiles(text: "Logout", icon: Icons.logout,callback:(){freeSharedPreferences(context);},),
+          ListTiles(
+            text: "Customers",
+            icon: Icons.face,
+            callback: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CustomerInEmployee()),
+              );
+            },
+          ),
           Divider(),
-          ListTiles(text: "Back", icon: Icons.arrow_forward_ios,callback:(){Navigator.pop(context);},),
+          ListTiles(
+            text: "Logout",
+            icon: Icons.logout,
+            callback: () {
+              freeSharedPreferences(context);
+            },
+          ),
+          Divider(),
+          ListTiles(
+            text: "Back",
+            icon: Icons.arrow_forward_ios,
+            callback: () {
+              Navigator.pop(context);
+            },
+          ),
           Divider(),
         ],
       ),
       //for web
-      body:SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment:CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 40, 0, 0),
@@ -56,39 +302,51 @@ class _ViewAllTicketsOfEmployeeState extends State<ViewAllTicketsOfEmployee> {
             Wrap(
               children: [
                 CustomCard(
-                  width:200,
-                  height:150,
+                  width: 200,
+                  height: 150,
                   color: AppColor.purpleAccent,
                   children: [
                     Center(
-                        child:Padding(padding:EdgeInsets.all(10),child:
-                        CustomIcon(icon:Icons.account_box_outlined,size:30,color:AppColor.white))
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: CustomIcon(
+                          icon: Icons.account_box_outlined,
+                          size: 30,
+                          color: AppColor.white,
+                        ),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: LabelText(
-                        text: "Total Tickets:\n5000",
+                        text: "Total Tickets:\n$totalTickets",
                         color: AppColor.white,
-                        fontWeight:FontWeight.normal,
+                        fontWeight: FontWeight.normal,
                       ),
                     ),
                   ],
                 ),
                 CustomCard(
-                  width:200,
-                  height:150,
-                  color: AppColor.orangeAccent,
+                  width: 200,
+                  height: 250,
+                  color: AppColor.orange,
                   children: [
                     Center(
-                        child:Padding(padding:EdgeInsets.all(10),child:
-                        CustomIcon(icon:Icons.account_box_outlined,size:30,color:AppColor.white))
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: CustomIcon(
+                          icon: Icons.account_box_outlined,
+                          size: 30,
+                          color: AppColor.white,
+                        ),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: LabelText(
-                        text: "Problem Solved:\n5000",
+                        text: "Total Status:\n$formattedStatusText",
                         color: AppColor.white,
-                        fontWeight:FontWeight.normal,
+                        fontWeight: FontWeight.normal,
                       ),
                     ),
                   ],
@@ -108,7 +366,337 @@ class _ViewAllTicketsOfEmployeeState extends State<ViewAllTicketsOfEmployee> {
                   Padding(
                     padding: EdgeInsets.all(10),
                     child: CustomTextButton(
-                      callback: () {},
+                      callback: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => Dialog(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: LabelText(text: "Generate Ticket"),
+                                  ),
+                                  Form(
+                                    key: _formKey,
+                                    child: Column(
+                                      children: [
+                                        CustomTextField(
+                                          text: "Enter Mobile Number",
+                                          controller: mobileController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        CustomTextField(
+                                          text: "Complaint Date",
+                                          controller: complaintDateController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        CustomTextField(
+                                          text: "Product Number",
+                                          controller: productNumberController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        CustomTextField(
+                                          text: "Product Name",
+                                          controller: productNameController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: DropdownButtonFormField<String>(
+                                            value: selectedComplaintLevel,
+                                            items: ['low', 'medium', 'high']
+                                                .map(
+                                                  (level) => DropdownMenuItem(
+                                                    value: level,
+                                                    child: Text(level),
+                                                  ),
+                                                )
+                                                .toList(),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                selectedComplaintLevel = value!;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                              labelText: "Complaint Level",
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.blue,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.blue,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              errorBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              focusedErrorBorder:
+                                                  OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                      color: Colors.red,
+                                                      width: 2,
+                                                    ),
+                                                  ),
+                                            ),
+                                            validator: (value) => value == null
+                                                ? 'Please select a Complaint Level'
+                                                : null,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child:
+                                              DropdownButtonFormField<String>(
+                                                value: selectedStatus,
+                                                items:
+                                                    [
+                                                          'open',
+                                                          'in_progress',
+                                                          'resolved',
+                                                          'closed',
+                                                        ]
+                                                        .map(
+                                                          (status) =>
+                                                              DropdownMenuItem(
+                                                                value: status,
+                                                                child: Text(
+                                                                  status,
+                                                                ),
+                                                              ),
+                                                        )
+                                                        .toList(),
+                                                onChanged: (data) {
+                                                  setState(() {
+                                                    selectedStatus = data!;
+                                                  });
+                                                },
+                                                decoration: InputDecoration(
+                                                  labelText: "Status",
+                                                  enabledBorder:
+                                                      OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                          color: Colors.blue,
+                                                          width: 2,
+                                                        ),
+                                                      ),
+                                                  focusedBorder:
+                                                      OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                          color: Colors.blue,
+                                                          width: 2,
+                                                        ),
+                                                      ),
+                                                  errorBorder:
+                                                      OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                          color: Colors.red,
+                                                          width: 2,
+                                                        ),
+                                                      ),
+                                                  focusedErrorBorder:
+                                                      OutlineInputBorder(
+                                                        borderSide: BorderSide(
+                                                          color: Colors.red,
+                                                          width: 2,
+                                                        ),
+                                                      ),
+                                                ),
+                                                validator: (value) =>
+                                                    value == null
+                                                    ? 'Please select a status'
+                                                    : null,
+                                              ),
+                                        ),
+
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: DropdownButtonFormField<String>(
+                                            value: selectedCategoryType,
+                                            items:
+                                                [
+                                                      'delivery_issue',
+                                                      'productive_defective',
+                                                      'warranty_claim',
+                                                      'service_request',
+                                                    ]
+                                                    .map(
+                                                      (type) =>
+                                                          DropdownMenuItem(
+                                                            value: type,
+                                                            child: Text(type),
+                                                          ),
+                                                    )
+                                                    .toList(),
+                                            onChanged: (data) {
+                                              setState(() {
+                                                selectedCategoryType = data!;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                              labelText: "Category Type",
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.blue,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.blue,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              errorBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              focusedErrorBorder:
+                                                  OutlineInputBorder(
+                                                    borderSide: BorderSide(
+                                                      color: Colors.red,
+                                                      width: 2,
+                                                    ),
+                                                  ),
+                                            ),
+                                            validator: (value) => value == null
+                                                ? 'Please select a status'
+                                                : null,
+                                          ),
+                                        ),
+                                        CustomTextField(
+                                          text: "Complaint Title",
+                                          controller: complaintTitleController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        CustomTextField(
+                                          text: "Complaint Description",
+                                          controller:
+                                              complaintDescriptionController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        CustomTextField(
+                                          text: "Product Image",
+                                          controller: productImageController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        CustomTextField(
+                                          text: "Comment",
+                                          controller: commentController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: CustomTextButton(
+                                            callback: () {
+                                              Navigator.pop(context);
+                                            },
+                                            text: "Quit",
+                                            color: AppColor.green,
+                                            size: 20,
+                                            textDecoration: TextDecoration.none,
+                                            backgroundColor:
+                                                AppColor.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: CustomTextButton(
+                                            callback: () {
+                                              if (_formKey.currentState!
+                                                  .validate()) {
+                                                generateTicket();
+                                              }
+                                            },
+                                            text: "Generate",
+                                            color: AppColor.blueAccent,
+                                            size: 20,
+                                            textDecoration: TextDecoration.none,
+                                            backgroundColor:
+                                                AppColor.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                       text: "Generate",
                       color: AppColor.white,
                       size: 17,
@@ -120,7 +708,272 @@ class _ViewAllTicketsOfEmployeeState extends State<ViewAllTicketsOfEmployee> {
                   Padding(
                     padding: EdgeInsets.all(10),
                     child: CustomTextButton(
-                      callback: () {},
+                      callback: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => Dialog(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: LabelText(text: "Update Ticket"),
+                                  ),
+                                  Form(
+                                    key: _formKey,
+                                    child: Column(
+                                      children: [
+                                        CustomTextField(
+                                          text: "Enter TicketId",
+                                          controller:ticketIdController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        CustomTextField(
+                                          text: "Enter Mobile Number",
+                                          controller: mobileController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        CustomTextField(
+                                          text: "Product Number",
+                                          controller: productNumberController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        CustomTextField(
+                                          text: "Product Name",
+                                          controller: productNameController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: DropdownButtonFormField<String>(
+                                            value: selectedComplaintLevel,
+                                            items: ['low', 'medium', 'high']
+                                                .map(
+                                                  (level) => DropdownMenuItem(
+                                                value: level,
+                                                child: Text(level),
+                                              ),
+                                            )
+                                                .toList(),
+                                            onChanged: (value) {
+                                              setState(() {
+                                                selectedComplaintLevel = value!;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                              labelText: "Complaint Level",
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.blue,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.blue,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              errorBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              focusedErrorBorder:
+                                              OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                            ),
+                                            validator: (value) => value == null
+                                                ? 'Please select a Complaint Level'
+                                                : null,
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: DropdownButtonFormField<String>(
+                                            value: selectedCategoryType,
+                                            items:
+                                            [
+                                              'delivery_issue',
+                                              'productive_defective',
+                                              'warranty_claim',
+                                              'service_request',
+                                            ]
+                                                .map(
+                                                  (type) =>
+                                                  DropdownMenuItem(
+                                                    value: type,
+                                                    child: Text(type),
+                                                  ),
+                                            )
+                                                .toList(),
+                                            onChanged: (data) {
+                                              setState(() {
+                                                selectedCategoryType = data!;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                              labelText: "Category Type",
+                                              enabledBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.blue,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              focusedBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.blue,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              errorBorder: OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                              focusedErrorBorder:
+                                              OutlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.red,
+                                                  width: 2,
+                                                ),
+                                              ),
+                                            ),
+                                            validator: (value) => value == null
+                                                ? 'Please select a status'
+                                                : null,
+                                          ),
+                                        ),
+                                        CustomTextField(
+                                          text: "Complaint Title",
+                                          controller: complaintTitleController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        CustomTextField(
+                                          text: "Complaint Description",
+                                          controller:
+                                          complaintDescriptionController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        CustomTextField(
+                                          text: "Product Image",
+                                          controller: productImageController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                        CustomTextField(
+                                          text: "Comment",
+                                          controller: commentController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: CustomTextButton(
+                                            callback: () {
+                                              Navigator.pop(context);
+                                            },
+                                            text: "Quit",
+                                            color: AppColor.green,
+                                            size: 20,
+                                            textDecoration: TextDecoration.none,
+                                            backgroundColor:
+                                            AppColor.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: CustomTextButton(
+                                            callback: () {
+                                              if (_formKey.currentState!
+                                                  .validate()) {
+                                                updateTicket();
+                                              }
+                                            },
+                                            text: "Update",
+                                            color: AppColor.blueAccent,
+                                            size: 20,
+                                            textDecoration: TextDecoration.none,
+                                            backgroundColor:
+                                            AppColor.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                       text: "Update",
                       color: AppColor.white,
                       size: 17,
@@ -129,23 +982,91 @@ class _ViewAllTicketsOfEmployeeState extends State<ViewAllTicketsOfEmployee> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
+
                   Padding(
                     padding: EdgeInsets.all(10),
                     child: CustomTextButton(
-                      callback: () {},
+                      callback: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => Dialog(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: LabelText(text: "Delete Ticket"),
+                                  ),
+                                  Form(
+                                    key: _formKey,
+                                    child: Column(
+                                      children: [
+                                        CustomTextField(
+                                          text: "Enter TicketId",
+                                          controller:ticketIdController,
+                                          validation: (value) {
+                                            if (value == null ||
+                                                value.trim().isEmpty) {
+                                              return 'This field is required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Center(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: CustomTextButton(
+                                            callback: () {
+                                              Navigator.pop(context);
+                                            },
+                                            text: "Quit",
+                                            color: AppColor.green,
+                                            size: 20,
+                                            textDecoration: TextDecoration.none,
+                                            backgroundColor:
+                                            AppColor.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(20),
+                                          child: CustomTextButton(
+                                            callback: () {
+                                              if (_formKey.currentState!
+                                                  .validate()) {
+                                                deleteTicket();
+                                              }
+                                            },
+                                            text: "Delete",
+                                            color: AppColor.blueAccent,
+                                            size: 20,
+                                            textDecoration: TextDecoration.none,
+                                            backgroundColor:
+                                            AppColor.transparent,
+                                            borderRadius: BorderRadius.circular(
+                                              20,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                       text: "Delete",
-                      color: AppColor.white,
-                      size: 17,
-                      textDecoration: TextDecoration.none,
-                      backgroundColor: AppColor.blue,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(10),
-                    child: CustomTextButton(
-                      callback: () {},
-                      text: "Notification",
                       color: AppColor.white,
                       size: 17,
                       textDecoration: TextDecoration.none,
@@ -167,253 +1088,49 @@ class _ViewAllTicketsOfEmployeeState extends State<ViewAllTicketsOfEmployee> {
                   ),
                   child: DataTable(
                     border: TableBorder.all(width: 1),
-                    columns: [
-                      DataColumn(label: LabelText(text: "Id")),
-                      DataColumn(label: LabelText(text: "Name")),
-                      DataColumn(label: LabelText(text: "Email")),
-                      DataColumn(label: LabelText(text: "title")),
-                      DataColumn(label: LabelText(text: "status")),
+                    columns: const [
+                      DataColumn(label: LabelText(text: 'Ticket ID')),
+                      DataColumn(label: LabelText(text: 'Product Name')),
+                      DataColumn(label: LabelText(text: 'Mobile Number')),
+                      DataColumn(label: LabelText(text: 'Complaint Title')),
+                      DataColumn(label: LabelText(text: 'Status')),
                     ],
-                    rows: [
-                      DataRow(
+                    rows: ticketData!.map((ticket) {
+                      return DataRow(
                         cells: [
                           DataCell(
                             LabelText(
-                              text: "123e134",
+                              text: ticket.ticket_id ?? '',
                               fontWeight: FontWeight.normal,
                             ),
                           ),
                           DataCell(
                             LabelText(
-                              text: "Jayant",
+                              text: ticket.product_name ?? '',
                               fontWeight: FontWeight.normal,
                             ),
                           ),
                           DataCell(
                             LabelText(
-                              text: "jayant62644@gmail.com",
+                              text: ticket.mobile_number?.toString() ?? '',
                               fontWeight: FontWeight.normal,
                             ),
                           ),
                           DataCell(
                             LabelText(
-                              text: "Broken Product",
+                              text: ticket.complaint_title ?? '',
                               fontWeight: FontWeight.normal,
                             ),
                           ),
                           DataCell(
                             LabelText(
-                              text: "Pending",
+                              text: ticket.status ?? '',
                               fontWeight: FontWeight.normal,
                             ),
                           ),
                         ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pendingl",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                      );
+                    }).toList(),
                   ),
                 ),
               ),
@@ -427,7 +1144,7 @@ class _ViewAllTicketsOfEmployeeState extends State<ViewAllTicketsOfEmployee> {
                 child: LineChart(
                   LineChartData(
                     minY: 0,
-                    maxY: 800,
+                    maxY: 450,
                     titlesData: FlTitlesData(
                       bottomTitles: AxisTitles(
                         axisNameWidget: LabelText(text: "Years"),
@@ -436,21 +1153,15 @@ class _ViewAllTicketsOfEmployeeState extends State<ViewAllTicketsOfEmployee> {
                           showTitles: true,
                           getTitlesWidget: (value, meta) {
                             const months = [
-                              '2014',
-                              '2015',
-                              '2016',
-                              '2017',
-                              '2018',
-                              '2019',
-                              '2020',
-                              '2021',
-                              '2022',
-                              '2023',
-                              '2024',
-                              '2025',
+                              "2025",
+                              "2026",
+                              "2027",
+                              "2028",
+                              "2029",
+                              "2030"
                             ];
                             return Text(
-                              months[value.toInt() % 12],
+                              months[value.toInt() % months.length],
                               style: TextStyle(fontSize: 10),
                             );
                           },
@@ -463,40 +1174,7 @@ class _ViewAllTicketsOfEmployeeState extends State<ViewAllTicketsOfEmployee> {
                     gridData: FlGridData(show: true),
                     borderData: FlBorderData(show: false),
                     lineBarsData: [
-                      // 🔶 Revenue Line
-                      LineChartBarData(
-                        spots: [
-                          FlSpot(0, 400),
-                          FlSpot(1, 450),
-                          FlSpot(2, 500),
-                          FlSpot(3, 550),
-                          FlSpot(4, 500),
-                          FlSpot(5, 650),
-                          FlSpot(6, 10),
-                          FlSpot(7, 50),
-                          FlSpot(8, 500),
-                          FlSpot(9, 20),
-                          FlSpot(10, 100),
-                          FlSpot(11, 10),
-                        ],
-                        isCurved: true,
-                        color: Colors.orange,
-                        barWidth: 3,
-                        dotData: FlDotData(show: false),
-                        belowBarData: BarAreaData(
-                          show: true,
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.blue.withOpacity(0.4),
-                              Colors.orange.withOpacity(0.1),
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                          ),
-                        ),
-                      ),
-
-                      // 🔷 Expense Line
+                     //Tickets Line
                       LineChartBarData(
                         spots: [
                           FlSpot(0, 200),
@@ -505,12 +1183,6 @@ class _ViewAllTicketsOfEmployeeState extends State<ViewAllTicketsOfEmployee> {
                           FlSpot(3, 350),
                           FlSpot(4, 400),
                           FlSpot(5, 420),
-                          FlSpot(6, 100),
-                          FlSpot(7, 440),
-                          FlSpot(8, 450),
-                          FlSpot(9, 560),
-                          FlSpot(10, 470),
-                          FlSpot(11, 880),
                         ],
                         isCurved: true,
                         color: Colors.blue,
@@ -520,7 +1192,7 @@ class _ViewAllTicketsOfEmployeeState extends State<ViewAllTicketsOfEmployee> {
                           show: true,
                           gradient: LinearGradient(
                             colors: [
-                              Colors.orange.withOpacity(0.4),
+                              Colors.green,
                               Colors.blue.withOpacity(0.1),
                             ],
                             begin: Alignment.topCenter,

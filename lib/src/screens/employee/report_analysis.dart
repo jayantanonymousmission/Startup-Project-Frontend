@@ -1,6 +1,5 @@
 //import some libraries and files
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:startupproject/src/screens/Authorization/employee.dart';
 import 'package:startupproject/src/screens/employee/customer.dart';

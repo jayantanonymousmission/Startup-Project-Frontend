@@ -10,7 +10,7 @@ class SendOtp {
     //use exception handling for handling the data
     try {
       //create variables
-      final uri = Uri.parse("http://10.167.252.138:5000/auth/sendOtp");
+      final uri = Uri.parse("http://10.183.99.138:5000/auth/sendOtp");
 
       //use http post for putting the data to backend
       final response = await http.post(

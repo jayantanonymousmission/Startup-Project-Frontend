@@ -1,7 +1,9 @@
 //import some libraries and files
 import 'package:flutter/material.dart';
+import 'package:startupproject/src/models/Tickting/tickting.dart';
 import 'package:startupproject/src/screens/Authorization/employee.dart';
 import 'package:startupproject/src/screens/employee/report_analysis.dart';
+import 'package:startupproject/src/screens/employee/view_all_tickets.dart';
 import 'package:startupproject/src/screens/employee/worker.dart';
 import 'package:startupproject/src/storage/constant/constants.dart';
 import 'package:startupproject/src/storage/custom_widgets/custom_card.dart';
@@ -10,6 +12,9 @@ import 'package:startupproject/src/storage/custom_widgets/drawer_header.dart';
 import 'package:startupproject/src/storage/custom_widgets/icon.dart';
 import 'package:startupproject/src/storage/custom_widgets/list_tile.dart';
 import 'package:startupproject/src/storage/custom_widgets/text_field.dart';
+import 'package:startupproject/src/utility/controllerFunctions/recentlyTIckets/recentlyTicketsOfCustomer.dart';
+import 'package:startupproject/src/utility/controllerFunctions/totalRole/customers.dart';
+import 'package:startupproject/src/utility/controllerFunctions/totalStatus/totalStatus.dart';
 import 'package:startupproject/src/utility/sharedPreferences/shared_preferences.dart';
 
 class CustomerInEmployee extends StatefulWidget {
@@ -19,14 +24,67 @@ class CustomerInEmployee extends StatefulWidget {
 }
 
 class _CustomerInEmployeeState extends State<CustomerInEmployee> {
+  //create some variable
+  int totalCustomers=0;
+  List<Map<String,dynamic>> totalStatus=[];
+  List<TicktingModel>? ticketData = [];
+
+  //create initState
+  @override
+  void initState() {
+    //Total Customers
+    totalCustomerRoleControllerFunction(
+        context:context,
+        onValueFetched:(value){
+          if(mounted) {
+            setState(() {
+              totalCustomers = value;
+            });
+          }
+        }
+    );
+    //ticket status
+    totalStausControllerFunction(
+        context: context,
+        onValueFetched:(List<Map<String,dynamic>> value){
+          if (mounted) {
+            setState(() {
+              totalStatus = value;
+            });
+          }
+        }
+    );
+    //Recently Tickets
+    recentlyTicketsOfCustomerControllerFunction(
+      context: context,
+      onValueFetched: (List<TicktingModel> data) {
+        if (mounted) {
+          setState(() {
+            ticketData = data;
+          });
+        }
+      },
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
+    String formattedStatusText = totalStatus.isNotEmpty
+        ? totalStatus.map((e) => "${e['status']}: ${e['count']}").join("\n")
+        : "No Data";
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.lightBlueAccent),
       drawer: Drawers(
         children: [
           CustomDrawerHeader(name: "Jayant", email: "jayant62644@gmail.com"),
           ListTiles(text: "DashBoard", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>EmployeeScreen()));},),
+          Divider(),
+          ListTiles(text: "View All Tickets", icon: Icons.home,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>ViewAllTicketsOfEmployee()));},),
           Divider(),
           ListTiles(text: "Report Analysis", icon: Icons.analytics,callback:(){Navigator.push(context,MaterialPageRoute(builder:(context)=>ReportAnalysisOfEmployee()));}),
           Divider(),
@@ -63,7 +121,7 @@ class _CustomerInEmployeeState extends State<CustomerInEmployee> {
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: LabelText(
-                        text: "Total Customers:\n5000",
+                        text: "Total Customers:\n$totalCustomers",
                         color: AppColor.white,
                         fontWeight:FontWeight.normal,
                       ),
@@ -82,26 +140,7 @@ class _CustomerInEmployeeState extends State<CustomerInEmployee> {
                     Padding(
                       padding: const EdgeInsets.all(10),
                       child: LabelText(
-                        text: "Solved Tickets:\n5000",
-                        color: AppColor.white,
-                        fontWeight:FontWeight.normal,
-                      ),
-                    ),
-                  ],
-                ),
-                CustomCard(
-                  width:200,
-                  height:150,
-                  color: AppColor.green,
-                  children: [
-                    Center(
-                        child:Padding(padding:EdgeInsets.all(10),child:
-                        CustomIcon(icon:Icons.account_box_outlined,size:30,color:AppColor.white))
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: LabelText(
-                        text: "Pending Tickets:\n5000",
+                        text: "Ticket Status:\n$formattedStatusText",
                         color: AppColor.white,
                         fontWeight:FontWeight.normal,
                       ),
@@ -405,246 +444,32 @@ class _CustomerInEmployeeState extends State<CustomerInEmployee> {
                       DataColumn(label: LabelText(text: "title")),
                       DataColumn(label: LabelText(text: "status")),
                     ],
-                    rows: [
-                      DataRow(
+                    rows: ticketData!.map((ticket) {
+                      return DataRow(
                         cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
+                          DataCell(LabelText(
+                            text: ticket.ticket_id ?? '',
+                            fontWeight: FontWeight.normal,
+                          )),
+                          DataCell(LabelText(
+                            text: ticket.product_name ?? '',
+                            fontWeight: FontWeight.normal,
+                          )),
+                          DataCell(LabelText(
+                            text: ticket.mobile_number?.toString() ?? '',
+                            fontWeight: FontWeight.normal,
+                          )),
+                          DataCell(LabelText(
+                            text: ticket.complaint_title ?? '',
+                            fontWeight: FontWeight.normal,
+                          )),
+                          DataCell(LabelText(
+                            text: ticket.status ?? '',
+                            fontWeight: FontWeight.normal,
+                          )),
                         ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pending",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                      DataRow(
-                        cells: [
-                          DataCell(
-                            LabelText(
-                              text: "123e134",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Jayant",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "jayant62644@gmail.com",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Broken Product",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          DataCell(
-                            LabelText(
-                              text: "Pendingl",
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                      );
+                    }).toList(),
                   ),
                 ),
               ),

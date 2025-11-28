@@ -13,12 +13,6 @@ Future<void> totalEmployeeRoleControllerFunction({
 
     if (response > 0) {
       onValueFetched(response);
-    } else {
-      SnackBarClass.snackBarFunction(
-        context,
-        "No Employees found",
-        AppColor.red,
-      );
     }
   } catch (e) {
     print("Exception: $e");

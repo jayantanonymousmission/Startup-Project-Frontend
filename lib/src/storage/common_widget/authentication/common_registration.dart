@@ -89,7 +89,7 @@ class CommonRegistration extends StatelessWidget {
                   child: Text(gender),
                 ))
                     .toList(),
-                onChanged: onGenderChanged,
+                onChanged:onGenderChanged,
                 decoration: const InputDecoration(
                   labelText: "Gender",
                   border: OutlineInputBorder(),
@@ -120,7 +120,7 @@ class CommonRegistration extends StatelessWidget {
                   child: Text(role),
                 ))
                     .toList(),
-                onChanged: onRoleChanged,
+                onChanged:onRoleChanged,
                 decoration: const InputDecoration(
                   labelText: "Role",
                   border: OutlineInputBorder(),

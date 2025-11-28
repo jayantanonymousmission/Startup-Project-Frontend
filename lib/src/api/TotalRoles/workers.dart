@@ -9,7 +9,7 @@ class TotalWorkers {
     //use exception handling for handling the data
     try {
       //create variables
-      final uri = Uri.parse("http://192.168.31.247:5000/count/TotalWorkers");
+      final uri = Uri.parse("http://10.183.99.138:5000/count/totalWorkers");
 
       //use http post for putting the data to backend
       final response = await http.get(

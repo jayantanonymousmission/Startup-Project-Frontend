@@ -2,7 +2,9 @@
 //Create Registration Model for convert raw data into json
 class RegistrationModel{
   //create variables
+  final String ? id;
   final String ? name;
+  final String ? email;
   final String ? password;
   final String ? gender;
   final String ? address;
@@ -12,12 +14,14 @@ class RegistrationModel{
   final String ? token;
   final bool ? status;
   //create constructor
-  RegistrationModel({ this.name, this.password, this.gender, this.address,this.role,this.code,this.message,this.token,this.status});
+  RegistrationModel({this.id, this.name, this.email,this.password, this.gender, this.address,this.role,this.code,this.message,this.token,this.status});
 
   //create factory function for convert raw data into json
   factory RegistrationModel.fromJson(Map<String,dynamic>json){
     return RegistrationModel(
+      id:json['id']?.toString(),
       name:json['name']?.toString(),
+      email:json['email']?.toString(),
       password:json['password']?.toString(),
       gender:json['gender']?.toString(),
       address:json['address']?.toString(),

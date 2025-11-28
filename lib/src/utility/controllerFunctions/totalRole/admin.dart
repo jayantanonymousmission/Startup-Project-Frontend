@@ -12,12 +12,6 @@ Future<void> totalAdminRoleControllerFunction({
 
     if (response > 0) {
       onValueFetched(response);
-    } else {
-      SnackBarClass.snackBarFunction(
-        context,
-        "No Admins found",
-        AppColor.red,
-      );
     }
   } catch (e) {
     print("Exception: $e");

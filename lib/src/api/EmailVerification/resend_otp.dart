@@ -9,7 +9,7 @@ class ResendOtp {
   static Future<EmailVerificationModel?> resendOtpFunction(String email) async {
     //use exception handling for handling the data
     try {
-      final uri = Uri.parse("http://10.167.252.138:5000/auth/resendOtp");
+      final uri = Uri.parse("http://10.183.99.138:5000/auth/resendOtp");
 
       //use http post for putting the data to backend
       final response = await http.post(

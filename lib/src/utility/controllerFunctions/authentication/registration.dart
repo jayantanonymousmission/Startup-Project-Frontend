@@ -4,6 +4,7 @@ import "package:startupproject/src/screens/Authentication/login_screen.dart";
 
 import "../../../api/Registration/registration.dart";
 
+
 Future<void> registrationScreen({
   required TextEditingController nameController,
   required TextEditingController passwordController,
